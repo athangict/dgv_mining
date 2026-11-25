@@ -1,0 +1,75 @@
+# Development stack for Dokploy (Compose service in the "development"
+# environment, "Compose Path" = ./docker-compose.dev.yml, branch: develop)
+#
+# Same as docker-compose.prod.yml except:
+#   - APP_ENV=development and PHP errors/stack traces are shown on screen
+#     (for debugging). Anyone who can open the dev domain sees them, so keep
+#     the dev domain private (not shared with end users).
+#   - SSO is off unless SSO_ENABLED=true is set.
+# Keep the rest in sync with docker-compose.prod.yml.
+#
+# - No database here: point DB_HOST at the Dokploy MariaDB service of the
+#   development environment.
+# - No published ports: Traefik routes the domain (Domains tab: service app,
+#   port 80). This is why the local docker-compose.yml must NOT be used on the
+#   server - it binds port 80 and starts its own database.
+# - All values come from the Dokploy "Environment" tab; nothing secret in git.
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    expose:
+      - "80"
+    environment:
+      APP_ENV: ${APP_ENV:-development}
+      PHP_DISPLAY_ERRORS: ${PHP_DISPLAY_ERRORS:-On}
+      APP_NAME: ${APP_NAME:-MONAL}
+      ERP_TAG: ${ERP_TAG:-ERP}
+      APL_CLIENT: ${APL_CLIENT:-BTN}
+      INITIAL_DEFAULT_PASSWORD: ${INITIAL_DEFAULT_PASSWORD:?set INITIAL_DEFAULT_PASSWORD}
+      WEAK_INITIAL_PASSWORDS: ${WEAK_INITIAL_PASSWORDS:-1234qwer,12345678,password}
+      STATIC_SALT: ${STATIC_SALT:-}
+      LEGACY_STATIC_SALT: ${LEGACY_STATIC_SALT:-}
+
+      DB_HOST: ${DB_HOST:?set DB_HOST}
+      DB_PORT: ${DB_PORT:-3306}
+      DB_NAME: ${DB_NAME:-dheyma_mining_24}
+      DB_USER: ${DB_USER:?set DB_USER}
+      DB_PASS: ${DB_PASS:?set DB_PASS}
+
+      SSO_ENABLED: ${SSO_ENABLED:-false}
+      SSO_CLIENT_ID: ${SSO_CLIENT_ID:-dgv_mining}
+      SSO_CLIENT_SECRET: ${SSO_CLIENT_SECRET:-}
+      SSO_REDIRECT_URI: ${SSO_REDIRECT_URI:-}
+      SSO_OPENID_CONFIGURATION_URI: ${SSO_OPENID_CONFIGURATION_URI:-}
+      SSO_AUTHORIZATION_ENDPOINT: ${SSO_AUTHORIZATION_ENDPOINT:-}
+      SSO_TOKEN_ENDPOINT: ${SSO_TOKEN_ENDPOINT:-}
+      SSO_USERINFO_ENDPOINT: ${SSO_USERINFO_ENDPOINT:-}
+      SSO_JWKS_URI: ${SSO_JWKS_URI:-}
+      SSO_LOGOUT_URI: ${SSO_LOGOUT_URI:-}
+      SSO_VALID_ISSUERS: ${SSO_VALID_ISSUERS:-}
+      SSO_LOGOUT_ENDPOINT: ${SSO_LOGOUT_ENDPOINT:-}
+      SSO_POST_LOGOUT_REDIRECT_URI: ${SSO_POST_LOGOUT_REDIRECT_URI:-}
+      SSO_USER_CREATE_ENDPOINT: ${SSO_USER_CREATE_ENDPOINT:-}
+      SSO_USER_API_KEY: ${SSO_USER_API_KEY:-}
+      SSO_USER_API_KEY_HEADER: ${SSO_USER_API_KEY_HEADER:-}
+      SSO_ALLOW_CLIENT_CREDENTIALS_FOR_USER_CREATE: ${SSO_ALLOW_CLIENT_CREDENTIALS_FOR_USER_CREATE:-false}
+    volumes:
+      # Uploaded files - persistent, and the volumes to back up.
+      - uploads_private:/var/www/data/uploads
+      - uploads_public:/var/www/public/upload
+      - uploads_photos:/var/www/public/uploads
+    networks:
+      - dokploy-network
+
+volumes:
+  uploads_private:
+  uploads_public:
+  uploads_photos:
+
+networks:
+  dokploy-network:
+    external: true

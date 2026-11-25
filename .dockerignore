@@ -1,0 +1,14 @@
+.git
+.env
+**/.DS_Store
+data/*.sql
+Vagrantfile
+docker-compose.yml
+vendor
+data/uploads
+public/upload
+public/uploads
+docker-compose.prod.yml
+docker/db-init.sh
+DEPLOYMENT.md
+docker-compose.dev.yml

@@ -1,0 +1,70 @@
+# Production stack for Dokploy (Compose service, "Compose Path" = ./docker-compose.prod.yml)
+#
+# - CI/CD is Dokploy only: Dokploy pulls this repo from GitHub, builds the
+#   Dockerfile on the server and redeploys on every push to main
+#   (Auto Deploy). No external registry or GitHub Actions involved.
+# - The database is a separate Dokploy-managed MariaDB service (with Dokploy's
+#   scheduled backups). Point DB_HOST at its internal host name.
+# - All values below come from the Dokploy "Environment" tab; nothing secret
+#   lives in git.
+# - The domain/HTTPS is configured in Dokploy's "Domains" tab
+#   (service: app, port: 80).
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    expose:
+      - "80"
+    environment:
+      APP_ENV: production
+      PHP_DISPLAY_ERRORS: "Off"
+      APP_NAME: ${APP_NAME:-MONAL}
+      ERP_TAG: ${ERP_TAG:-ERP}
+      APL_CLIENT: ${APL_CLIENT:-BTN}
+      INITIAL_DEFAULT_PASSWORD: ${INITIAL_DEFAULT_PASSWORD:?set INITIAL_DEFAULT_PASSWORD}
+      WEAK_INITIAL_PASSWORDS: ${WEAK_INITIAL_PASSWORDS:-1234qwer,12345678,password}
+      STATIC_SALT: ${STATIC_SALT:-}
+      LEGACY_STATIC_SALT: ${LEGACY_STATIC_SALT:-}
+
+      DB_HOST: ${DB_HOST:?set DB_HOST}
+      DB_PORT: ${DB_PORT:-3306}
+      DB_NAME: ${DB_NAME:-dheyma_mining_24}
+      DB_USER: ${DB_USER:?set DB_USER}
+      DB_PASS: ${DB_PASS:?set DB_PASS}
+
+      SSO_ENABLED: ${SSO_ENABLED:-true}
+      SSO_CLIENT_ID: ${SSO_CLIENT_ID:-dgv_mining}
+      SSO_CLIENT_SECRET: ${SSO_CLIENT_SECRET:-}
+      SSO_REDIRECT_URI: ${SSO_REDIRECT_URI:-}
+      SSO_OPENID_CONFIGURATION_URI: ${SSO_OPENID_CONFIGURATION_URI:-}
+      SSO_AUTHORIZATION_ENDPOINT: ${SSO_AUTHORIZATION_ENDPOINT:-}
+      SSO_TOKEN_ENDPOINT: ${SSO_TOKEN_ENDPOINT:-}
+      SSO_USERINFO_ENDPOINT: ${SSO_USERINFO_ENDPOINT:-}
+      SSO_JWKS_URI: ${SSO_JWKS_URI:-}
+      SSO_LOGOUT_URI: ${SSO_LOGOUT_URI:-}
+      SSO_VALID_ISSUERS: ${SSO_VALID_ISSUERS:-}
+      SSO_LOGOUT_ENDPOINT: ${SSO_LOGOUT_ENDPOINT:-}
+      SSO_POST_LOGOUT_REDIRECT_URI: ${SSO_POST_LOGOUT_REDIRECT_URI:-}
+      SSO_USER_CREATE_ENDPOINT: ${SSO_USER_CREATE_ENDPOINT:-}
+      SSO_USER_API_KEY: ${SSO_USER_API_KEY:-}
+      SSO_USER_API_KEY_HEADER: ${SSO_USER_API_KEY_HEADER:-}
+      SSO_ALLOW_CLIENT_CREDENTIALS_FOR_USER_CREATE: ${SSO_ALLOW_CLIENT_CREDENTIALS_FOR_USER_CREATE:-false}
+    volumes:
+      # Uploaded files - persistent, and the volumes to back up.
+      - uploads_private:/var/www/data/uploads
+      - uploads_public:/var/www/public/upload
+      - uploads_photos:/var/www/public/uploads
+    networks:
+      - dokploy-network
+
+volumes:
+  uploads_private:
+  uploads_public:
+  uploads_photos:
+
+networks:
+  dokploy-network:
+    external: true

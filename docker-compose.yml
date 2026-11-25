@@ -1,7 +1,47 @@
-laminas:
-  build: .
-  dockerfile: Dockerfile
-  ports:
-   - "8080:80"
-  volumes:
-   - .:/var/www
+# Fixed project name: container/volume names are the same on every machine,
+# whatever the checkout folder is called. Local stack only - do NOT add a
+# name to docker-compose.prod.yml (Dokploy sets it per environment).
+name: dgv-mining
+
+services:
+  app:
+    build: .
+    image: dgv-mining:local
+    ports:
+      - "80:80"     # http://localhost/dgv.mining.com/public/ (matches SSO redirect URI)
+      - "8080:80"   # http://localhost:8080/
+    env_file: .env
+    environment:
+      DB_HOST: db
+      DB_PORT: "3306"
+    volumes:
+      # Uploaded files must outlive the container (rebuilds / redeploys)
+      - uploads_private:/var/www/data/uploads
+      - uploads_public:/var/www/public/upload
+      - uploads_photos:/var/www/public/uploads
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: mariadb:10.11
+    environment:
+      MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: "yes"   # only takes effect when DB_PASS is empty
+      MARIADB_ROOT_PASSWORD: ${DB_PASS:-}
+    ports:
+      - "3307:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./data:/dump:ro
+      - ./docker/db-init.sh:/docker-entrypoint-initdb.d/01-import.sh:ro
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 60
+
+volumes:
+  db_data:
+  uploads_private:
+  uploads_public:
+  uploads_photos:
