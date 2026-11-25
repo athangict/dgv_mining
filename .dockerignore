@@ -11,3 +11,4 @@ public/uploads
 docker-compose.prod.yml
 docker/db-init.sh
 DEPLOYMENT.md
+docker-compose.dev.yml

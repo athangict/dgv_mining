@@ -15,8 +15,18 @@ git push main ──► Dokploy (Auto Deploy) ──► docker compose build + u
 | File | Purpose |
 |---|---|
 | `Dockerfile` | Image used both locally and in production |
-| `docker-compose.prod.yml` | **Dokploy** stack (app only; DB is a Dokploy service) |
-| `docker-compose.yml` | **Local** stack (app + MariaDB loaded from `data/dgv_mining.sql`) |
+| `docker-compose.yml` | **Local only** (your Mac): app + its own MariaDB, ports 80/8080/3307. **Never use on the server.** |
+| `docker-compose.dev.yml` | **Dokploy development** environment (branch `develop`): app only, errors shown on screen |
+| `docker-compose.prod.yml` | **Dokploy production** environment (branch `main`): app only, errors hidden |
+
+> **Dokploy's default Compose Path is `./docker-compose.yml` (the local file).**
+> Always change it: development → `./docker-compose.dev.yml`,
+> production → `./docker-compose.prod.yml`. With the local file, the deploy
+> fails on port 80 ("port is already allocated") and starts an extra,
+> internet-exposed database on port 3307.
+>
+> In the development environment, don't set `APP_ENV` (or set it to
+> `development`); `APP_ENV=production` there would hide errors.
 | `docker/config/zz-docker.local.php` | Deployment config overrides, copied into the image (see below) |
 | `docker/db-init.sh` | Local only: loads the dump into the local MariaDB |
 
@@ -72,7 +82,8 @@ Compose can't parse it. The app ignored that line before and still ignores it.
 1. **Create Service → Compose**
    - Provider: **GitHub**. Install the Dokploy GitHub App on the `athangict` org once.
    - Repository `dgv_mining`, branch `main`
-   - Compose path: `./docker-compose.prod.yml`
+   - Compose path: `./docker-compose.prod.yml` (production) or
+     `./docker-compose.dev.yml` (development, branch `develop`)
    - **Auto Deploy: ON**. This is the CI/CD: every push to `main` redeploys.
 2. **Environment** tab: paste the values below. Never commit them.
    ```env
