@@ -1,0 +1,67 @@
+<?php
+/**
+ * View -- of Product/ProductController/ProductAction
+ **/
+$this->headTitle($this->title);    
+?>
+<div class="card">
+    <div class="card-header">
+        <div class="btn-group pull-right">
+            <?php echo $this->button(2); ?>
+        </div>
+    </div>
+    <div class="table-responsive">
+        <table class="table card-table text-nowrap" id="dataTables">
+            <thead>
+                <tr>
+                    <th>Crusher No</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($product as $row): ?>
+                    <tr>
+                        <td><?php echo $row['crusher_no']; ?></td>
+                        <td><?php echo date('l, F j, Y', strtotime($row['created'])); ?></td>
+                        <td><?php echo $this->status($row['status']); ?></td>
+                        
+                        <?php if ($this->button(1) != ""): ?>
+                            <td><?php echo $this->button(1, $row['id'] . '_' . $page); ?></td>
+                        <?php endif; ?>                                    
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- For Modal -->
+<div id="modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content"></div>
+    </div>
+</div>
+
+<!-- Add jQuery and DataTables JS -->
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
+<script>
+    $('document').ready(function() {
+        $('#dataTables').DataTable({
+            "order": [[1, "desc"]],  // Sort by Date (second column) in descending order
+            "paging": true,          // Enable pagination
+            "pageLength": 10,        // Number of rows per page
+            "lengthMenu": [5, 10, 25, 50], // Options for rows per page
+            "searching": true,       // Enable the search box
+            "language": {
+                "search": "Filter:", // Change the search box label
+            },
+            "columnDefs": [
+                { "orderable": false, "targets": -1 } // Disable sorting on the "Action" column
+            ]
+        });
+    });
+</script>

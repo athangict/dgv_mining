@@ -1,0 +1,92 @@
+<?php 
+/**
+ * View -- of Assessment/AssessmentController/addassessmentAction
+ */
+$this->headTitle($this->title);
+?>
+
+<form id="form" method="post" action="<?php echo $this->url('q', array('action' => 'addexplosive')); ?>" enctype="multipart/form-data">                  
+
+    <div class="modal-header">
+        <h4 class="modal-title"><i class="icon ti ti-edit"></i> Add Explosive</h4>
+    </div>
+
+    <div class="modal-body">
+    <input type="hidden" name="application_id" id="application_id" value="<?php echo $application_id; ?>" /> 
+
+    <div class="row">
+        <div class="mb-3 col-lg-6">
+            <label class="form-label" for="explosive_name">Explosive</label>
+            <select id="explosive_name" name="explosive_name" class="form-control" data-placeholder="Select" required>
+                <option value="" disabled selected>Select</option>
+                <?php foreach ($explosive as $explosive_name): ?>
+                    <option value="<?php echo ($explosive_name['id']); ?>" <?php echo (isset($selected_explosive) && $selected_explosive == $explosive_name['id']) ? 'selected' : ''; ?>>
+                        <?php echo ($explosive_name['explosive_type']); ?>
+                    </option>
+                <?php endforeach; ?> 
+            </select> 
+        </div>
+
+        <div class="mb-3 col-lg-6">
+            <label class="form-label" for="no_ofexplosive">No of Explosive</label>
+            <input class="form-control" type="text" name="no_ofexplosive" id="no_ofexplosive" placeholder="Enter No of explosive" value="<?php echo isset($no_ofexplosive) ? $no_ofexplosive : ''; ?>" required>
+        </div>
+        <div class="mb-3 col-lg-6">
+            <label class="form-label" for="blasters">Blasters</label>
+            <select id="blasters" name="blasters" class="form-control" data-placeholder="Select" required>
+                <option value="" disabled selected>Select</option>
+                <?php foreach ($employees as $blaster): ?>
+                    <option value="<?php echo ($blaster['id']); ?>" <?php echo (isset($selected_blaster) && $selected_blaster == $blaster['id']) ? 'selected' : ''; ?>>
+                        <?php echo ($blaster['full_name']); ?>
+                    </option>
+                <?php endforeach; ?>
+            </select> 
+        </div>
+    </div>
+</div>
+    <div class="modal-footer">
+        <button type="submit" class="btn btn-success"><i class="fa fa-check"></i> Save </button>
+        <button type="button" class="btn btn-warning" data-dismiss="modal" ><i class="fa fa-times"></i> Cancel </button> 
+    </div>
+</form>
+<style>
+select, option {
+    color: black; 
+    background-color: white; 
+}
+.modal-content {
+    background-color: white; 
+    color: black; 
+}
+</style>
+<script type="text/javascript">
+$(function() {
+    const fv = FormValidation.formValidation(document.getElementById('form'), {
+        fields: {
+            no_ofexplosive: {
+                validators: {
+                    notEmpty: {
+                        message: 'Please enter the number of explosives.'
+                    }
+                }
+            },
+            blasters: {  
+                validators: {
+                    notEmpty: {
+                        message: 'Please select a blaster.'
+                    }
+                }
+            },
+        },
+        plugins: {
+            trigger: new FormValidation.plugins.Trigger(),
+            bootstrap5: new FormValidation.plugins.Bootstrap5({
+                rowSelector: '.mb-3',
+            }),
+            submitButton: new FormValidation.plugins.SubmitButton(),
+            defaultSubmit: new FormValidation.plugins.DefaultSubmit(),
+        },
+    });
+});
+</script>
+

@@ -1,0 +1,300 @@
+<?php 
+/**
+ * View -- of step4Action
+ */
+	$this->headTitle($this->title);
+?>
+<?php foreach ($application as $row);
+ $max_activity = $this->flowtransactionObj->getMax($column='activity', $where=array('application'=>$row['id']));
+ $current_flow = $this->flowtransactionObj->get(array('application'=>$row['id'], 'activity'=>$max_activity));
+ //echo '<pre>';print_r( $max_activity );exit;
+ $edit_option = 0;
+ if(sizeof($current_flow) > 0){
+	foreach($current_flow as $current);
+	$userRolesArray = explode(",", $login_role);
+	$edit_option = (in_array($current['actor'],$userRolesArray))?1:0;
+ }
+?>
+<div class="page-body">
+	<div class="container-xl">
+	    <div id="wizard" class="swMain">
+			<?php echo $this->partial('assessment/assessment/stepper.phtml', array('active' => 'step4','id'=> $row['id'],'step' => '4','maxstep'=> $row['maxstep']));?>
+		</div>
+		<div class="card" id="print-content">
+			<div class="card-header">
+				<div class="col-auto ms-auto no-print">
+					<div class="btn-list">
+						<span data-bs-toggle='tooltip' data-bs-placement='top' title='PDF Print'>
+							<a class='btn btn-light btn-sm' id="print">
+							<i class="icon ti ti-printer"></i>PDF</a></span>
+						<span data-bs-toggle='tooltip' data-bs-placement='top' title='View Activity Logs'>
+							<a class="btn btn-light btn-sm" data-toggle="modal" data-target="#modal" href="<?php echo $this->url('application', array('action' => 'activitylog', 'id' => "1309-".$row['id'])); ?>">
+							<i class="icon ti ti-plus"></i>Logs</a></span>
+					</div>
+				</div>
+			</div>
+			<div class="card-body">
+				<table class="table table-sm table-bordered card-table text-wrap fs-5" >
+				    <tbody>
+						<tr>
+							<th class="table-secondary fw-bold text-end" style="width: 25%;">Assisnment No:</th>
+							<td><strong><?php echo $row['application_no']; ?></strong></td>
+						</tr>
+						<tr>
+							<th class="table-secondary fw-bold text-end" style="width: 25%;">Work Category:</th>
+							<td><?php echo $this->category->getColumn($row['category'], 'category'); ?></td>
+						</tr>
+						<tr>
+							<th class="table-secondary fw-bold text-end" style="width: 25%;">Date:</th>
+							<td><?php echo (empty($row['date'])) ? "<i>-Not Available-</i>" : $row['date']; ?></td>
+						</tr>
+                        <tr>
+                            <th class="table-secondary fw-bold text-end" style="width: 25%;">status</th>
+                            <td><?php echo $this->status($row['status']); ?></td>
+                        </tr>
+                    </tbody>
+				</table>
+			</div>
+			<div class="card-body">
+                <h5 class="card-title">Assignment of Excavators</h5>
+                <table class="table table-sm table-bordered card-table text-wrap fs-5" id="dataTables">
+                    <thead>
+                        <tr>
+                            <th>Excavator</th>
+                            <th>Operator</th>
+                            <th>Start Meter</th>
+                            <th>HSD Issued</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php if (!empty($infa)): ?>
+                            <?php $count = 0; ?>
+                            <?php foreach ($infa as $index => $infrastructure): ?>
+
+                                    <tr class="row-<?php echo $index; ?>">
+                                           <td><?php echo $this->asset->getColumn($infrastructure['excavator'], 'name'); ?></td>
+                                        <td><?php echo $this->emp->getColumn($infrastructure['driver_name'], 'full_name'); ?></td>
+                                        <td><?php echo $infrastructure['start_meter']; ?></td>
+                                        <td><?php echo $infrastructure['hsd_issued']; ?></td>
+                                    </tr>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <tr>
+                                <td colspan="5" class="text-center">No infrastructure details available.</td>
+                            </tr>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card-body">
+                <h5 class="card-title">Assignment of Blaster</h5>
+                <table class="table table-sm table-bordered card-table text-wrap fs-5" id="dataTables">
+                    <thead>
+                        <tr>
+                            <th>Explosive</th>
+                            <th>No. Of Explosive</th>
+                            <th>Blasters</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php if (!empty($explosive)): ?>
+                            <?php $count = 0; ?>
+                            <?php foreach ($explosive as $expo): ?>
+                                <?php if ($count < 10): ?>
+                                    <tr>
+                                         <td><?php echo $this->masterexplosive->getColumn($expo['explosive_name'], 'explosive_type'); ?></td>
+                                        <td><?php echo $expo['no_ofexplosive']; ?></td>
+                                        <td><?php echo $this->emp->getColumn($expo['blasters'], 'full_name'); ?></td>
+                                    </tr>
+                                    <?php $count++; ?>
+                                <?php else: ?>
+                                    <?php break; ?>
+                                <?php endif; ?>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <tr>
+                                <td colspan="5" class="text-center">No details available.</td>
+                            </tr>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card-body">
+                <h5 class="card-title">Attendance</h5>
+                <table class="table table-sm table-bordered card-table text-wrap fs-5" id="dataTables">
+                    <thead>
+                        <tr>
+                            <th>Employee</th>
+                            <th>Status</th>
+                            <th>Work Start Time</th>
+                            <th>Replaced Employee</th>
+                            <th>Supervisor Remarks (If Absent)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php if (!empty($attendence)): ?>
+                            <?php foreach ($attendence as $attendence): ?>
+                                <tr class="attendance-row">
+                                    <td><?php echo $this->attendancObj->getColumn($attendence['attendance_employee'],'full_name'); ?></td>
+                                      <td><?php echo $this->statusObj->getColumn($attendence['attendance_status'],'attendance_status'); ?></td>
+                                    <td><?php echo $attendence['time']; ?></td>
+                                   <td>
+                                            <?php 
+                                            echo !empty($attendence['replacement_employee']) 
+                                                ? $this->attendancObj->getColumn($attendence['replacement_employee'], 'full_name') 
+                                                : 'Not Available'; 
+                                            ?>
+                                        </td>
+                                    <td><?php echo !empty($attendence['remarks']) ? $attendence['remarks'] : 'Not Available'; ?></td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <tr>
+                                <td colspan="5" class="text-center">No details available.</td>
+                            </tr>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+            </div>
+                                <div class="card-body">
+                    <h5 class="card-title">Transportations</h5>
+                    <table class="table table-sm table-bordered card-table text-wrap fs-5" id="dataTables">
+                    <thead>
+                        <tr>
+                            <th>Company</th>
+                            <th>Truck_no/Truck_Id</th>
+                            <th>Permit No</th>
+                            <th>Approximate weight</th>
+                            <th>Type Of Dispatched</th>
+                            <th>Weight(Tons)</th>
+                            <th>Trips Count</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php
+                        $totalWeight = 0;
+                        $totalTips = 0;
+                        $totalTrips = 0;
+
+                        $vehicleData = [];
+
+                        if (!empty($extractiondetails)):
+
+                            foreach ($extractiondetails as $extraction):
+                                $vehicle = $extraction['vehicle'];  
+                                if (isset($vehicleData[$vehicle])) {
+                                    $vehicleData[$vehicle]['weight'] += $extraction['weight'];
+                                    $vehicleData[$vehicle]['trips'] += 1; 
+                                    $vehicleData[$vehicle]['tips'][] = isset($extraction['tips']) ? $extraction['tips'] : 0; 
+                                } else {
+
+                                    $vehicleData[$vehicle] = [
+                                        'company' => $this->company->getColumn($extraction['company'], 'company'),
+                                        'truck_no' => $this->vechObj->getColumn($vehicle, 'vehicle'),
+                                        'permit_no' => $extraction['permit_no'],
+                                        'aprox_weight' => $extraction['aprox_weight'],
+                                        'type_of_dispatch' => $this->dispatchtypeObj->getColumn($extraction['type_ofdispatche'], 'name'),
+                                        'weight' => $extraction['weight'],
+                                        'trips' => 1, 
+                                        'tips' => [isset($extraction['tips']) ? $extraction['tips'] : 0], 
+                                    ];
+                                }
+                            endforeach;
+
+                            foreach ($vehicleData as $vehicle):
+                                $totalWeight += $vehicle['weight']; 
+                                $totalTrips += $vehicle['trips']; 
+
+                                foreach ($vehicle['tips'] as $tip) {
+                                    $totalTips += $tip; 
+                                }
+                        ?>
+                                <tr class="table-row">
+                                    <td><?php echo $vehicle['company']; ?></td>
+                                    <td><?php echo $vehicle['truck_no']; ?></td>
+                                    <td><?php echo $vehicle['permit_no']; ?></td>
+                                    <td><?php echo $vehicle['aprox_weight']; ?></td>
+                                    <td><?php echo $vehicle['type_of_dispatch']; ?></td>
+                                    <td><?php echo !empty($vehicle['weight']) ? $vehicle['weight'] : 'Not Available'; ?></td>
+                                    <td><?php echo $vehicle['trips']; ?></td>
+                                </tr>
+                        <?php 
+                            endforeach;
+                        else: 
+                        ?>
+                            <tr>
+                                <td colspan="7" class="text-center">No details available.</td>
+                            </tr>
+                        <?php endif; ?>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="5" class="text-end fw-bold">Total</td>
+                            <td><?php echo !empty($totalWeight) ? $totalWeight : 'Not Available'; ?></td>
+                            <td><?php echo !empty($totalTrips) ? $totalTrips : 'Not Available'; ?></td>
+                        </tr>
+                    </tfoot>
+                    </table>
+                    </div>
+
+			<div class="row">
+				<div class="col-lg-3"></div>
+				<div class="col-lg-6">
+					&nbsp; 
+				</div>
+				<div class="col-lg-3">
+					<?php 
+						if($row['status'] < 3)://status 3- pending?>
+							<?php echo $this->button(3, $row['id']);
+						endif;?>
+				</div>
+			</div>
+			<div class="card">
+				<div class="card-body">
+					<?php echo $this->partial('partial/attachment.phtml', array('process' => '1309', 'process_id'=> $row['id'], 'applicationNO'=>$row['application_no'], 'login_id' =>$login_id));?>
+				</div>
+				<div class="card-footer d-flex">
+					<div class="col-auto ms-auto d-print-none">
+						<div class="btn-list">
+							<a href="<?php echo $this->url('q',array('action' => 'step3','id'=>$row['id']));?>" class="btn btn-white">
+								Back
+							</a>
+							<?php 
+							if(sizeof($current_flow) > 0 && $edit_option==1):
+								foreach($current_flow as $flow);
+								$actions = explode('|', $flow['action']);
+								for($i=0; $i < sizeof($actions); $i++):
+									$buttons = $this->flowactionObj->get($actions[$i]);
+									foreach($buttons as $button):?>
+									<span data-bs-toggle='tooltip' data-bs-placement='top' title='<?php echo $button['action']; ?>'>
+									<a class="btn <?php echo $button['class']; ?>" data-toggle="modal" data-target="#modal" href="<?php echo $this->url('q', array('action' => 'process', 'id'=>$row['id'].'-'.$button['id'].'-'.$flow['id'])); ?>">
+										<i class="icon <?php echo $button['icon'];?>"></i><?php echo $button['action']; ?>
+									</a></span>
+									<?php
+									endforeach;
+								endfor;
+							endif;?>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-hidden="true">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<script>
+$('document').ready(function(){
+	$('#print').gentcpdf({
+		content: '#print-content',
+		src:"<?php echo $this->url('print', array('action' => 'index'));?>",
+		orentation:"P",
+		size: 'A4',
+	});  
+});

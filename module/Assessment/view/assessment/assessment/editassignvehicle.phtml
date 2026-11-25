@@ -1,0 +1,124 @@
+<?php 
+/**
+ * View -- of Assessment/AssessmentController/editassessmentAction
+ */
+$this->headTitle($this->title);
+?>
+
+<?php foreach($assign as $asig):
+    endforeach;?>  
+    <?php foreach($assigns as $row):
+    endforeach;?>  
+<form id="form" method="post" action="<?php echo $this->url('q', array('action' => 'editassignvehicle')); ?>" enctype="multipart/form-data">                  
+
+<div class="modal-header">
+    <h4 class="modal-title"><i class="icon ti ti-edit"></i>Edit Assessment</h4>
+</div>
+
+<div class="modal-body">
+    <input type="hidden" name="application_id" id="application_id" value="<?php echo $application_id; ?>" /> 
+    <input type="hidden" id="assign_id" name="assign_id" value="<?php echo $id; ?>" />
+
+    <div class="row">
+
+        <div class="form-group col-lg-4">
+            <label for="company" class="control-label">Hiring Company</label>
+            <select class="form-control" id="company" name="company" data-placeholder="Select" required>
+                <option value="" disabled>Select</option>
+                <?php 
+                foreach ($companys as $company): 
+                    $selected = ($company['company'] === $asig['company']) ? 'selected' : ''; // Check match
+                ?>
+                    <option value="<?php echo $company['id']; ?>" <?php echo $selected; ?>>
+                        <?php echo ($company['company']); ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+
+        <div class="form-group col-lg-4">
+            <label for="vehicle" class="control-label">Vehicle</label>
+            <select class="form-control chosen-widget" id="vehicle" name="vehicle" data-placeholder="Select" required>
+                <option value="" disabled>Select</option>
+                <?php 
+                foreach ($vehicles as $vehicle): 
+                    $selected = ($vehicle['vehicle'] === $asig['vehicle']) ? 'selected' : ''; // Check match
+                ?>
+                    <option value="<?php echo $vehicle['id']; ?>" <?php echo $selected; ?>>
+                        <?php echo ($vehicle['vehicle']); ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+    </div>
+</div>
+
+<div class="modal-footer">
+    <button type="submit" class="btn btn-success"><i class="fa fa-check"></i> Save </button>
+    <button type="button" class="btn btn-warning" data-dismiss="modal"><i class="fa fa-times"></i> Cancel </button> 
+</div><!-- /modal-footer -->
+</form>
+
+<style>
+    
+</style>
+<script type="text/javascript">
+$(function(){
+    // When the company is selected, fetch and update vehicle options
+    $('select#company').on('change', function() {
+        $.post(
+            "<?php echo $this->url('q', array('action' => 'getvehicless')); ?>",
+            { vehicleId: $(this).val() },
+            function(data) {
+                // Populate vehicle dropdown with the vehicle name and id
+                $('select#vehicle').html(data.vehicle);
+                $('select#vehicle').trigger('chosen:updated');
+            },
+            'json'
+        );
+    });
+
+    
+
+    const fv = FormValidation.formValidation(document.getElementById('form'), {
+        fields: {
+            date: {
+                validators: {
+                    notEmpty: {
+                        message: 'Please select a date.'
+                    },
+                }
+            },
+            categoryy: {
+                validators: {
+                    notEmpty: {
+                        message: 'Please select a category.'
+                    },
+                }
+            },
+        },
+        plugins: {
+            trigger: new FormValidation.plugins.Trigger(),
+            bootstrap5: new FormValidation.plugins.Bootstrap5({
+                rowSelector: '.mb-3',
+            }),
+            submitButton: new FormValidation.plugins.SubmitButton(),
+            defaultSubmit: new FormValidation.plugins.DefaultSubmit(),
+        },
+    }).on('core.element.validated', function (e) {
+        if (e.valid) {
+            $('div#' + e.field.replace('[]','') + '_chosen').removeClass('is-invalid');
+            $('div#' + e.field.replace('[]','') + '_chosen').addClass('is-valid');
+        } else {
+            $('div#' + e.field.replace('[]','') + '_chosen').removeClass('is-valid');
+            $('div#' + e.field.replace('[]','') + '_chosen').addClass('is-invalid');
+        }
+    });
+
+    $('form select').chosen().change(function () {
+        fv.revalidateField($(this).attr('name'));
+    });
+
+});
+</script>
+

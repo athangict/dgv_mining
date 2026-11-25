@@ -1,0 +1,81 @@
+<?php 
+/**
+ * View -- of Protection/ProtectionController/step4Action
+ */
+	$this->headTitle($this->title);
+?>
+<?php foreach ($application as $row);
+ $max_activity = $this->flowtransactionObj->getMax($column='activity', $where=array('application'=>$row['id']));
+ $current_flow = $this->flowtransactionObj->get(array('application'=>$row['id'], 'activity'=>$max_activity));
+ $edit_option = 0;
+ if(sizeof($current_flow) > 0){
+	foreach($current_flow as $current);
+ 	$edit_option = ($current['actor']==$login_role)?1:0;
+ }
+?>
+<div class="page-body">
+	<div class="container-xl">
+	    <div id="wizard" class="swMain">
+			<?php echo $this->partial('assessment/assessment/stepper.phtml', array('active' => 'step4','id'=> $row['id'],'step' => '4','maxstep'=> $row['maxstep']));?>
+		</div>
+		<div class="card" id="print-content">
+			<div class="card-header">
+				<div class="col-auto ms-auto no-print">
+					<div class="btn-list">
+						<?php //if($edit_option){ echo $this->button(2,$row['id']); }?>
+						<span data-bs-toggle='tooltip' data-bs-placement='top' title='PDF Print'>
+							<a class='btn btn-light btn-sm' id="print">
+							<i class="icon ti ti-printer"></i>PDF</a></span>
+						<span data-bs-toggle='tooltip' data-bs-placement='top' title='View Activity Logs'>
+							<a class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#modal" href="<?php echo $this->url('application', array('action' => 'activitylog', 'id' => "1309-".$row['id'])); ?>">
+							<i class="icon ti ti-plus"></i>Logs</a></span>
+					</div>
+				</div>
+			</div>
+			<div class="card">
+				<div class="card-body">
+					<?php echo $this->partial('partial/attachment.phtml', array('process' => '1309', 'process_id'=> $row['id'], 'applicationNO'=>$row['application_no'], 'login_id' =>$login_id));?>
+				</div>
+				<div class="card-footer d-flex">
+					<div class="col-auto ms-auto d-print-none">
+						<div class="btn-list">
+							<a href="<?php echo $this->url('q',array('action' => 'step3','id'=>$row['id']));?>" class="btn btn-white">
+								Back
+							</a>
+							<?php 
+							if(sizeof($current_flow) > 0): // && $edit_option
+								foreach($current_flow as $flow);
+								$actions = explode('|', $flow['action']);
+								for($i=0; $i < sizeof($actions); $i++):
+									$buttons = $this->flowactionObj->get($actions[$i]);
+									foreach($buttons as $button):?>
+							<span data-bs-toggle='tooltip' data-bs-placement='top' title='<?php echo $button['action']; ?>'>
+									<a class="btn <?php echo $button['class']; ?>" data-bs-toggle="modal" data-bs-target="#modal" href="<?php echo $this->url('q', array('action' => 'process', 'id'=>$row['id'].'-'.$button['id'].'-'.$flow['id'])); ?>">
+										<i class="icon <?php echo $button['icon'];?>"></i><?php echo $button['action']; ?>
+									</a></span>
+								<?php
+									endforeach;
+								endfor;
+							endif;?>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-hidden="true">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<script>
+$('document').ready(function(){
+	$('#print').gentcpdf({
+		content: '#print-content',
+		src:"<?php echo $this->url('print', array('action' => 'index'));?>",
+		orentation:"P",
+		size: 'A4',
+	});  
+});

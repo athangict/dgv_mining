@@ -1,0 +1,479 @@
+
+<!-- HTML Structure -->
+<div class="row">
+    <div class="col-lg-12">
+        <div class="widget widget-box">
+            <div class="widget-header">
+                <h5 class="widget-title lighter smaller">Production</h5>
+            </div>
+            <div class="widget-body">
+                <div class="widget-main">
+                    <div id="report-print">
+                        <form id="itemForm" method="post" action="<?php echo $this->url('product', array('action' => 'addstoneproduct')); ?>" enctype="multipart/form-data">   
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <h3>Item Details</h3>
+                                    <div>
+                                        <table id="item_field" class="table small-padding">
+                                            <!-- Item Group and Item Dropdown -->
+                                            <tr>
+                                                <td class="col-lg-6">
+                                                    <div class="form-group">
+                                                        <label for="item_subgroup" class="control-label">Item Group</label>
+                                                        <select class="form-control" name="item_subgroup" id="item_subgroup" data-placeholder="Select">
+                                                        <option value="" disabled selected>Select</option>
+                                                            <?php 
+                                                            foreach ($itemgroups as $item_subgroup): 
+                                                                if ($item_subgroup['id'] == 1): 
+                                                            ?>
+                                                                    <option value="<?php echo $item_subgroup['id']; ?>">
+                                                                        <?php echo $item_subgroup['item_group']; ?>
+                                                                    </option>
+                                                            <?php 
+                                                                endif;
+                                                            endforeach; 
+                                                            ?>
+                                                        </select>
+                                                    </div>
+                                                </td>
+                                                
+                                                <td class="col-lg-6">
+                                                    <div class="form-group">
+                                                        <label for="item" class="control-label">Item</label>
+                                                        <select class="form-control" name="item" id="item" data-placeholder="Select" readonly>
+                                                            <option value=""></option>
+                                                        </select>
+                                                    </div>
+                                                </td>
+                                            </tr>
+
+                                            <!-- Stock Qty and Feed Quantity -->
+                                            <tr>
+                                                <td class="col-lg-6">
+                                                    <div class="form-group">
+                                                        <label for="stock_qty" class="control-label">Stock Qty(Tonnes)</label>
+                                                        <input type="text" class="form-control tr_stock_qty" name="stock_qty" id="stock_qty" value="0.00" readonly>
+                                                    </div>         
+                                                </td>
+
+                                                <td class="col-lg-6">
+                                                    <div class="form-group">
+                                                        <label for="quantity" class="control-label">Feed Qty(Tonnes)</label>
+                                                        <input type="text" class="form-control tr_quantity" name="quantity" id="quantity" value="">
+                                                    </div>
+                                                </td>
+                                            </tr>
+
+                                            <!-- Unit of Measurement (UOM) -->
+                                            <!-- <tr>
+                                                <td class="col-lg-6">
+                                                    <div class="form-group">
+                                                        <label for="basic_uom" class="control-label">UOM</label>
+                                                        <input type="text" class="form-control tr_basic_uom" name="basic_uom" id="basic_uom" value=" " readonly>
+                                                    </div>
+                                                </td>
+                                            </tr> -->
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                          <!-- Crushed Product Section -->
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <h3>Crushed Product</h3>
+                                    <div>
+                                        <table id="item_fields" class="table small-padding">
+                                            <tr>
+                                                <td class="col-lg-6">
+                                                    <div class="form-group">
+                                                        <label for="product" class="control-label">Products</label>
+                                                        <select class="form-control" name="product[]" id="product" data-placeholder="Select">
+                                                            <option value="" disabled selected>Select</option>
+                                                            <?php 
+                                                            foreach ($productObj as $product): 
+                                                                if ($product['item_group'] == 4): 
+                                                            ?>
+                                                                <option value="<?php echo $product['id']; ?>">
+                                                                    <?php echo $product['name']; ?>  
+                                                                </option>
+                                                            <?php 
+                                                                endif; 
+                                                            endforeach; 
+                                                            ?>
+                                                        </select>
+                                                    </div>
+                                                </td>
+
+                                                <!-- Product Quantity Input -->
+                                                <td class="col-lg-6">
+                                                    <div class="form-group">
+                                                        <label for="product_qty" class="control-label">Quantity</label>
+                                                        <input class="form-control product_qty" type="text" name="product_qty[]" placeholder="Enter product_qty" required>
+                                                    </div>
+                                                </td>
+                                                <td class="col-lg-6">
+                                                    <div class="form-group">
+                                                        <label for="product_uom" class="control-label">Quantity</label>
+                                                        <input type="text" class="form-control tr_basic_uom" name="product_uom[]" id="product_uom" value=" " readonly>
+                                                    </div>
+                                                </td>
+                                                    <td class="col-lg-1">
+                                                    <button type="button" class="btn btn-danger btn-xs remove-row" style="display:none;">
+                                                        <i class="fa fa-trash"></i> 
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <button class="btn btn-xs custom-btn" type="button" onclick="item_fields();" style="margin-left: 15px;"> <!-- Add left margin here -->
+                                            <span class="fa fa-plus-square" aria-hidden="true"> Add Row</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Form Buttons -->
+                             <div class="modal-footer">
+                                <button type="submit" class="btn btn-success"><i class="fa fa-check"></i> Save</button>
+                                <button type="button" class="btn btn-warning" data-dismiss="modal"><i class="fa fa-times"></i> Cancel</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+var room = 1;
+
+function item_fields() {
+    room++;
+    var objTo = document.getElementById('item_fields');
+    var divtest = document.createElement('tr');
+    divtest.setAttribute('class', 'form-group removeclass' + room);
+
+    divtest.innerHTML = `
+    <td class="col-lg-6">
+        <div class="form-group">
+            <label for="product" class="control-label">Product</label>
+            <select class="form-control" name="product[]" data-placeholder="Select" required>
+                <option value="" disabled selected>Select</option>
+                <?php foreach ($productObj as $product): ?>
+                    <?php if ($product['item_group'] == 4): ?>
+                        <option value="<?php echo $product['id']; ?>">
+                            <?php echo $product['name']; ?>
+                        </option>
+                    <?php endif; ?>
+                <?php endforeach; ?>
+            </select>
+        </div>
+    </td>
+    <td class="col-lg-6">
+        <div class="form-group">
+            <label for="product_qty" class="control-label">Quantity</label>
+            <input class="form-control product_qty" type="text" name="product_qty[]" placeholder="Enter product_qty" required>
+        </div>
+    </td>
+    <td class="col-lg-1">
+        <button type="button" class="btn btn-danger btn-xs remove-row" onclick="remove_item_fields(${room});">
+            <i class="fa fa-trash"></i>
+        </button>
+    </td>
+`;
+$('#itemForm').on('submit', function (e) {
+    let isValid = true;
+
+    $('select[name="product[]"]').each(function () {
+        if (!$(this).val()) {
+            isValid = false;
+            $(this).css('border-color', 'red');
+        } else {
+            $(this).css('border-color', '');
+        }
+    });
+
+    $('.product_qty').each(function () {
+        if (!$(this).val() || isNaN($(this).val()) || parseFloat($(this).val()) <= 0) {
+            isValid = false;
+            $(this).css('border-color', 'red');
+        } else {
+            $(this).css('border-color', '');
+        }
+    });
+
+    if (!isValid) {
+        e.preventDefault(); // Prevent form submission if invalid
+        alert('Please fill out all fields correctly.');
+    }
+});
+
+    // Append the newly created row to the table
+    objTo.appendChild(divtest);
+    
+    // Initialize Select2 on the dynamically added 'product' dropdown
+    $(divtest).find('select[name="product"]').select2({
+        placeholder: "Select a product",
+        allowClear: true
+    });
+
+    // Initialize event listener for the remove button
+    $(divtest).find('.remove-row').show();
+}
+
+// Function to remove a specific row
+function remove_item_fields(rid) {
+    $('.removeclass' + rid).remove();
+    // After removing a row, revalidate the total product quantities
+    validate_total_quantity();
+}
+
+// Product Quantity Validation (Check against the total Feed quantity)
+$(document).on('input', '.product_qty', function () {
+    validate_total_quantity();
+});
+
+// Function to validate total quantity
+function validate_total_quantity() {
+    // Get the Feed quantity (total stock available)
+    const maxQuantity = parseFloat($('#quantity').val()) || 0; 
+
+    // Get the sum of all product quantities across all rows
+    let totalProductQty = 0;
+    $('.product_qty').each(function () {
+        const productQty = parseFloat($(this).val()) || 0;
+        totalProductQty += productQty;
+    });
+
+    // Check if the total product quantity exceeds the Feed quantity
+    if (totalProductQty > maxQuantity) {
+        alert('Total product quantity exceeds available Feed quantity!');
+        $('.product_qty').each(function () {
+            // Reset the product quantities if they exceed the limit
+            if (totalProductQty > maxQuantity) {
+                $(this).val(0);
+                $(this).css('background-color', '#FFCCCC');  // Highlight the field
+            } else {
+                $(this).css('background-color', '');  // Reset background color if valid
+            }
+        });
+    } else {
+        // Reset background colors if the total is valid
+        $('.product_qty').css('background-color', '');
+    }
+}
+
+// Optional: To prevent form submission if total exceeds available Feed quantity
+$('#itemForm').on('submit', function (e) {
+    const maxQuantity = parseFloat($('#quantity').val()) || 0;
+    let totalProductQty = 0;
+
+    // Calculate total product quantity
+    $('.product_qty').each(function () {
+        const productQty = parseFloat($(this).val()) || 0;
+        totalProductQty += productQty;
+    });
+
+    // Prevent submission if total exceeds available Feed quantity
+    if (totalProductQty > maxQuantity) {
+        alert('Total product quantity exceeds available Feed quantity!');
+        e.preventDefault();  // Prevent form submission
+    }
+});
+
+
+
+
+
+    // Item Group Change Handler
+    $('select#item_subgroup').on('change', function () {
+        const subgroupId = $(this).val();
+        const locationId = $('#location').val() || -1;
+
+        $.ajax({
+            url: "<?php echo $this->url('product', array('action' => 'getItemChange')); ?>",
+            type: 'POST',
+            data: {
+                locationId: locationId,
+                item_subgroup: subgroupId,
+            },
+            dataType: 'json',
+            success: function (response) {
+                if (response.items) {
+                    $('select#item').html(response.items); 
+                    $('select#item').trigger('chosen:updated');
+                    $('select#item').select2();
+
+                    $('select#item').data('stock_quantity', response.stock_quantity);
+                } else {
+                    alert('No items found for the selected subgroup.');
+                }
+            },
+            error: function () {
+                alert('Failed to fetch items. Please try again.');
+            },
+        });
+    });
+
+    // Item Selection Change Handler
+    $('select#item').on('change', function () {
+        const itemId = $(this).val();
+        const locationId = $('#location').val() || -1;
+
+        if (itemId) {
+            // Fetch UOM
+            $.ajax({
+                url: "<?php echo $this->url('product', array('action' => 'getuom')); ?>",
+                type: 'POST',
+                data: { itemId: itemId },
+                dataType: 'json',
+                success: function (response) {
+                    if (response.uom) {
+                        $('#basic_uom').val(response.uom);
+                    } else {
+                        alert('Failed to fetch UOM.');
+                    }
+                },
+                error: function () {
+                    alert('Failed to fetch UOM.');
+                },
+            });
+            
+
+            // Fetch Stock Quantity
+            $.ajax({
+                url: "<?php echo $this->url('product', array('action' => 'getstock')); ?>",
+                type: 'POST',
+                data: { item: itemId },
+                dataType: 'json',
+                success: function (response) {
+                    if (response.quantity) {
+                        $('#stock_qty').val(response.quantity); 
+                        $('select#item').data('stock_quantity', response.quantity);
+                    } else {
+                        $('#stock_qty').val('0.00');
+                        $('select#item').data('stock_quantity', 0);
+                    }
+
+                    // Set rate and cost price
+                    $('#rate').val(response.rate);
+                    $('#cost_price').val(response.cost_price);
+                },
+                error: function () {
+                    alert('Error fetching stock quantity.');
+                },
+            });
+        } else {
+            $('#stock_qty').val('');
+            $('select#item').data('stock_quantity', 0);
+        }
+    });
+
+    $('select#product').on('change', function () {
+        const itemId = $(this).val();
+        const locationId = $('#location').val() || -1;
+
+        if (itemId) {
+            $.ajax({
+                url: "<?php echo $this->url('product', array('action' => 'getproductuom')); ?>",
+                type: 'POST',
+                data: { itemId: itemId },
+                dataType: 'json',
+                success: function (response) {
+                    if (response.uom) {
+                        $('#product_uom').val(response.uom);
+                    } else {
+                        alert('Failed to fetch UOM.');
+                    }
+                },
+                error: function () {
+                    alert('Failed to fetch UOM.');
+                },
+            });
+        }
+    });
+
+
+    // Quantity Input Validation
+    $(document).on('input', '.tr_quantity', function () {
+        const enteredQuantity = parseFloat($(this).val()) || 0;
+        const stockQty = $('select#item').data('stock_quantity');
+
+        if (enteredQuantity > stockQty) {
+            alert('Entered quantity exceeds available stock!');
+            $(this).val(stockQty);
+            $(this).css('background-color', '#FFCCCC');
+        } else {
+            $(this).css('background-color', '');
+        }
+
+        calculateTotal($(this));
+    });
+// // Product Quantity Validation
+// $(document).on('input', '#product_qty', function () {
+//     const enteredProductQty = parseFloat($(this).val()) || 0;  
+//     const maxQuantity = parseFloat($('#quantity').val()) || 0; // The available quantity from the "Feed" field
+
+//     if (enteredProductQty > maxQuantity) {
+//         alert('Entered product quantity exceeds available Feed quantity!');
+//         $(this).val(maxQuantity);  // Reset to max available quantity
+//         $(this).css('background-color', '#FFCCCC');  // Highlight the field
+//     } else {
+//         $(this).css('background-color', '');  // Reset background color if valid
+//     }
+// });
+
+    // Form Validation Setup
+    const fv = FormValidation.formValidation(document.getElementById('itemForm'), {
+        fields: {
+            'payment_type': {
+                validators: {
+                    notEmpty: {
+                        message: 'Please select Payment Type.'
+                    }
+                }
+            },
+            'location': {
+                validators: {
+                    notEmpty: {
+                        message: 'Please select location.'
+                    }
+                }
+            },
+            'quantity': {
+                validators: {
+                    callback: {
+                        message: 'Entered quantity cannot exceed available stock.',
+                        callback: function (input) {
+                            const enteredQuantity = parseFloat(input.value) || 0;
+                            const stockQuantity = parseFloat($('select#item').data('stock_quantity')) || 0;
+
+                            if (enteredQuantity <= 0 || isNaN(enteredQuantity)) {
+                                return false;
+                            }
+
+                            return enteredQuantity <= stockQuantity;
+                        }
+                    }
+                }
+            }
+        },
+        plugins: {
+            trigger: new FormValidation.plugins.Trigger(),
+            bootstrap3: new FormValidation.plugins.Bootstrap3(),
+            submitButton: new FormValidation.plugins.SubmitButton(),
+            defaultSubmit: new FormValidation.plugins.DefaultSubmit(),
+        },
+    }).on('core.element.validated', function (e) {
+        const elementField = e.field.replace('[]', '');
+        if (e.valid) {
+            $('div#' + elementField + '_chosen').removeClass('is-invalid').addClass('is-valid');
+        } else {
+            $('div#' + elementField + '_chosen').removeClass('is-valid').addClass('is-invalid');
+        }
+    });
+</script>

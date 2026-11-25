@@ -1,0 +1,85 @@
+<?php 
+/**
+ * View -- of Assessment/AssessmentController/addassessmentAction
+ */
+$this->headTitle($this->title);
+// echo'<pre>';print_r($work_category);exit;
+?>
+<form id="form" method="post" action="<?php echo $this->url('q', array('action' => 'addassessment')); ?>" enctype="multipart/form-data">                  
+    <div class="modal-header">
+        <h4 class="modal-title"><i class="icon ti ti-edit"></i>Add Assignment</h4>
+    </div>
+    <div class="modal-body">
+        <input type="hidden" name="application_id" id="application_id" value="81">
+        <div class="row">
+            <div class="form-group col-lg-4">
+                <label for="date" class="control-label"> Date</label>
+                <div class="date input-group" id="date" data-date-format="yyyy-mm-dd" >
+                    <input class="form-control span2" name="date" id="date" type="text" placeholder="Date" >
+                    <span class="input-group-addon add-on"><i class="fa fa-calendar"></i></span>
+                </div>
+            </div>	
+            <div class="mb-3 col-lg-6">
+                <label class="form-label" for="categoryy">Work Category</label>
+                <select id="categoryy" name="categoryy" class="form-control" data-placeholder="Select" required>
+                    <option value="" disabled selected>Select</option>
+                    <?php foreach ($categories as $category): ?>
+                        <option value="<?php echo ($category['id']); ?>">
+                            <?php echo ($category['category']); ?>
+                        </option>
+                    <?php endforeach; ?>								
+                </select> 
+            </div>
+        </div>      
+    </div>
+    <div class="modal-footer">
+        <button type="submit" class="btn btn-success"><i class="fa fa-check"></i> Save </button>
+        <button type="button" class="btn btn-warning" data-dismiss="modal" ><i class="fa fa-times"></i> Cancel </button> 
+    </div>
+</form>
+
+<script type="text/javascript">
+$(document).ready(function() {
+
+    $('#date').datepicker();
+    const fv = FormValidation.formValidation(document.getElementById('form'), {
+        fields: {
+            date: {
+                validators: {
+                    notEmpty: {
+                        message: 'Please select a date.'
+                    },
+                }
+            },
+            work_category: {
+                validators: {
+                    notEmpty: {
+                        message: 'Please select a work category.'
+                    },
+                }
+            },
+        },
+        plugins: {
+            trigger: new FormValidation.plugins.Trigger(),
+            bootstrap5: new FormValidation.plugins.Bootstrap5({
+                rowSelector: '.mb-3',
+            }),
+            submitButton: new FormValidation.plugins.SubmitButton(),
+            defaultSubmit: new FormValidation.plugins.DefaultSubmit(),
+        },
+    }).on('core.element.validated', function (e) {
+        if (e.valid) {
+            $('div#' + e.field.replace('[]','') + '_chosen').removeClass('is-invalid');
+            $('div#' + e.field.replace('[]','') + '_chosen').addClass('is-valid');
+        } else {
+            $('div#' + e.field.replace('[]','') + '_chosen').removeClass('is-valid');
+            $('div#' + e.field.replace('[]','') + '_chosen').addClass('is-invalid');
+        }
+    });
+
+    $('form select').chosen().change(function () {
+        fv.revalidateField($(this).attr('name'));
+    });
+
+});
+</script>

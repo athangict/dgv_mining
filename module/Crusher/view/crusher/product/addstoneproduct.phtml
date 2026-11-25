@@ -1,0 +1,173 @@
+<div class="row">
+    <div class="col-lg-12">
+        <div class="widget widget-box">
+            <div class="widget-header">
+                <h5 class="widget-title lighter smaller">Production</h5>
+            </div>
+            <div class="widget-body">
+                <div class="widget-main">
+                    <div id="report-print">
+                        <form id="itemForm" method="post" action="<?php echo $this->url('product', ['action' => 'addstoneproduct']); ?>" enctype="multipart/form-data">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <h3>Item Details</h3>
+                                    <table id="item_field" class="table small-padding">
+                                        <tr>
+                                            <td class="col-lg-6">
+                                                <input type="hidden" name="crusher_no" value="<?= $crusherNo ?>">
+                                                <div class="form-group">
+                                                    <label for="stock_qty" class="control-label">Stock Qty (Tonnes)</label>
+                                                    <input type="text" class="form-control tr_stock_qty" name="stock_qty" id="stock_qty" 
+                                                        value="<?php echo !empty($stockObj) ? $stockObj[0]['quantity'] : '0.00'; ?>" readonly>
+                                                </div>
+                                            </td>
+                                            <td class="col-lg-6">
+                                                <div class="form-group">
+                                                    <label for="quantity" class="control-label">Feed Qty (Tonnes)</label>
+                                                    <input type="number" class="form-control tr_quantity" name="quantity" id="quantity" 
+                                                           max="<?= $stockObj[0]['quantity'] ?>" step="0.01">
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                    <table>
+                                        <tr>
+                                            <td class="col-lg-6">
+                                                <div class="form-group">
+                                                    <label for="output_type" class="control-label">Select Output Type</label>
+                                                    <select class="form-control" name="output_type" id="output_type">
+                                                        <option value="" disabled selected>Select</option>
+                                                        <option value="40mm">40 mm</option>
+                                                        <option value="20mm">20 mm</option>
+                                                        <option value="30mm">30 mm</option>
+                                                        <option value="gsb">GSB</option>
+                                                    </select>
+                                                </div>
+                                            </td>
+                                            <td class="col-lg-6">
+                                                <label for="date" class="control-label"> Date</label>
+                                                <div class="date input-group" id="date" data-date="<?php echo date('Y-m-d');?>" data-date-format="yyyy-mm-dd">
+                                                    <input class="form-control span2" name="date" id="date" type="text" value="<?php echo date('Y-m-d');?>" placeholder=" Date" readonly required>
+                                                    <span class="input-group-addon add-on"><i class="fa fa-calendar"></i></span>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                    <div class="row">
+                                        <div class="col-lg-12">
+                                            <h3>Crushed Product</h3>
+                                            <table id="item_fields" class="table small-padding">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Product</th>
+                                                        <th>Percentage (%)</th>
+                                                        <th>Quantity (Tonnes)</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody></tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-success"><i class="fa fa-check"></i> Save</button>
+                                <button type="button" class="btn btn-warning" data-dismiss="modal"><i class="fa fa-times"></i> Cancel</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+const itemGroups = <?php echo json_encode($itemgroups); ?>;
+
+document.getElementById('output_type').addEventListener('change', generateEditableRows);
+document.getElementById('quantity').addEventListener('input', updateQuantitiesFromInputs);
+
+const outputTypePercentages = {
+    '40mm': { 1: 23, 2: 25, 3: 32, 5: 18, 8: 2 },
+    '20mm': { 1: 37, 2: 43, 5: 18, 8: 2 },
+    '30mm': { 1: 22, 2: 32, 4: 28, 5: 18 },
+    'gsb':  { 9: 95 }
+};
+
+function generateEditableRows() {
+    const outputType = document.getElementById('output_type').value;
+    const feedQuantity = parseFloat(document.getElementById('quantity').value) || 0;
+    const tableBody = document.querySelector('#item_fields tbody');
+    tableBody.innerHTML = '';
+
+    if (!outputType || !outputTypePercentages[outputType]) return;
+
+    const percentages = outputTypePercentages[outputType];
+
+    Object.entries(percentages).forEach(([itemId, percentage]) => {
+        const item = itemGroups.find(item => item.id == itemId);
+        if (item) {
+            const quantity = ((percentage * feedQuantity) / 100).toFixed(2);
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>
+                    <input class="form-control" type="text" name="product[]" value="${item.name}" readonly>
+                    <input type="hidden" name="product_id[]" value="${item.id}">
+                </td>
+                <td>
+                    <input class="form-control percent-input" type="number" name="product_percent[]" value="${percentage}" min="0" max="100" step="0.1" data-id="${itemId}">
+                </td>
+                <td>
+                    <input class="form-control product_qty" type="text" name="product_qty[]" value="${quantity}" readonly>
+                </td>
+            `;
+            tableBody.appendChild(row);
+        }
+    });
+
+    document.querySelectorAll('.percent-input').forEach(input => {
+        input.addEventListener('input', updateQuantitiesFromInputs);
+    });
+}
+
+function updateQuantitiesFromInputs() {
+    const feedQuantity = parseFloat(document.getElementById('quantity').value) || 0;
+    const rows = document.querySelectorAll('#item_fields tbody tr');
+    let totalPercentage = 0;
+
+    rows.forEach(row => {
+        const percentInput = row.querySelector('.percent-input');
+        const qtyInput = row.querySelector('.product_qty');
+
+        const percent = parseFloat(percentInput.value) || 0;
+        totalPercentage += percent;
+
+        const quantity = ((percent * feedQuantity) / 100).toFixed(2);
+        qtyInput.value = quantity;
+    });
+
+    if (totalPercentage > 100) {
+        alert("Total percentage cannot exceed 100%. Please adjust the values.");
+        rows.forEach(row => row.querySelector('.percent-input').style.backgroundColor = '#FFCCCC');
+    } else {
+        rows.forEach(row => row.querySelector('.percent-input').style.backgroundColor = '');
+    }
+}
+
+document.querySelector('#quantity').addEventListener('input', function () {
+    const enteredQuantity = parseFloat(this.value) || 0;
+    const stockQty = parseFloat(document.getElementById('stock_qty').value) || 0;
+
+    if (enteredQuantity > stockQty) {
+        alert('Entered quantity exceeds available stock!');
+        this.value = stockQty;
+        this.style.backgroundColor = '#FFCCCC';
+    } else {
+        this.style.backgroundColor = '';
+    }
+    updateQuantitiesFromInputs();
+});
+
+$('#date').datepicker();
+</script>

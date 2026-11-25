@@ -1,0 +1,130 @@
+<?php 
+/**
+ * View -- of Assessment/AssessmentController/editextractionAction
+ */
+$this->headTitle($this->title);
+?>
+<?php foreach($Extract as $ext): endforeach; ?>
+<?php foreach($Extraction as $row): endforeach; ?>
+
+    <form id="form" method="post" action="<?php echo $this->url('q', array('action' => 'editextraction')); ?>" enctype="multipart/form-data">                   
+        <div class="modal-header">
+            <h4 class="modal-title"><i class="icon ti ti-edit"></i>Edit Dispatch</h4>
+        </div>
+        <div class="modal-body">
+
+        <input type="hidden" name="application_id" id="application_id" value="<?php echo $application_id; ?>" /> 
+        <input type="hidden" id="ext_id" name="ext_id" value="<?php echo $id; ?>" />
+                <div class="row mb-3">
+                        <div class="col-lg-4">
+                            <label for="company" class="control-label">Company</label>
+                            <select class="form-control" id="company" name="company" data-placeholder="Select" required>
+                                <option value="">Select</option>
+                                <?php foreach ($companys as $com): ?>
+                                    <option value="<?php echo ($com['company']); ?>">
+                                        <?php echo $this->exreactObj->getColumn($com['company'], 'company'); ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div class="col-lg-4">
+                            <label for="vehicle" class="control-label">Truck No / Truck ID</label>
+                            <select class="form-control chosen-widget" id="vehicle" name="vehicle" data-placeholder="Select" required>
+                                <option value="" disabled selected>Select</option>
+                            </select>
+                        </div>
+                </div>
+
+
+                <div class="row mb-3">
+                        <div class="col-lg-4">
+                            <label class="form-label" for="type_ofdispatche">Dispatch Load Type</label>
+                            <select class="form-control" id="type_ofdispatche" name="type_ofdispatche" required>
+                                <option value="" disabled selected>Select a Dispatch</option>
+                                <?php foreach ($dispatchObj as $type_ofdispatche): ?>
+                                    <option value="<?php echo ($type_ofdispatche['id']); ?>">
+                                        <?php echo ($type_ofdispatche['name']); ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+
+
+                    <div class="col-lg-4">
+                        <label class="form-label" for="time">Time</label>
+                        <input class="form-control" type="time" name="time" id="time" value="<?php echo $ext['time']; ?>" required>
+                    </div>
+                </div>
+
+
+                <div class="row mb-3">
+                    <div class="col-lg-4">
+                        <label class="form-label" for="permit_no">Permit No</label>
+                        <input class="form-control" type="text" name="permit_no" id="permit_no" value="<?php echo $ext['permit_no']; ?>" required>
+                    </div>
+                    <div class="col-lg-4">
+                        <label class="form-label" for="aprox_weight">Approximate Weight</label>
+                        <input class="form-control" type="text" name="aprox_weight" id="aprox_weight" value="<?php echo $ext['aprox_weight']; ?>">
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success"><i class="fa fa-check"></i> Save</button>
+                    <button type="button" class="btn btn-warning" data-dismiss="modal"><i class="fa fa-times"></i> Cancel</button> 
+                </div>
+        </div>
+   </form>
+
+<script type="text/javascript">
+$(function(){
+    $('select#company').on('change', function() {
+        $.post(
+            "<?php echo $this->url('q', array('action' => 'getvehicless')); ?>",
+            { vehicleId: $(this).val() },
+            function(data) {
+                // Populate vehicle dropdown with the vehicle name and id
+                $('select#vehicle').html(data.vehicle);
+                $('select#vehicle').trigger('chosen:updated');
+            },
+            'json'
+        );
+    });
+    const fv = FormValidation.formValidation(document.getElementById('form'), {
+        fields: {
+            company: {
+                validators: {
+                    notEmpty: { message: 'Please select a company.' }
+                }
+            },
+            vehicle: {
+                validators: {
+                    notEmpty: { message: 'Please select a vehicle.' }
+                }
+            },
+            time: {
+                validators: {
+                    notEmpty: { message: 'Please enter the time.' }
+                }
+            },
+            permit_no: {
+                validators: {
+                    notEmpty: { message: 'Please enter the permit number.' }
+                }
+            },
+            aprox_weight: {
+                validators: {
+                    notEmpty: { message: 'Please enter the approximate weight.' }
+                }
+            }
+        },
+        plugins: {
+            trigger: new FormValidation.plugins.Trigger(),
+            bootstrap5: new FormValidation.plugins.Bootstrap5({
+                rowSelector: '.mb-3',
+            }),
+            submitButton: new FormValidation.plugins.SubmitButton(),
+            defaultSubmit: new FormValidation.plugins.DefaultSubmit(),
+        },
+    });
+});
+</script>

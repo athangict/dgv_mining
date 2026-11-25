@@ -1,0 +1,126 @@
+<?php 
+/**
+ * View -- of Protection/ProtectionController/step3Action
+ */
+	$this->headTitle($this->title); 
+?>
+<?php foreach ($application as $row);
+?>
+<div class="page-body">
+	<div class="container-xl">
+		<div class="row row-cards">
+			<div class="col-12">
+				<div class="card">
+					<div id="wizard" class="swMain">
+						<?php echo $this->partial('assessment/assessment/stepper.phtml', array('active' => 'step2','id'=> $row['id'],'step' => '2','maxstep'=> $row['maxstep']));?>
+					</div>
+					<div class="card-body">
+					   <table class="table table-sm table-bordered card-table text-wrap fs-5" >
+                            <tbody>
+                                <tr>
+                                    <th class="table-secondary fw-bold text-end" style="width: 25%;">Application No:</th>
+                                    <td><strong><?php echo $row['application_no']; ?></strong></td>
+                                </tr>
+                                <tr>
+                                    <th class="table-secondary fw-bold text-end" style="width: 25%;">Work Category:</th>
+                                    <td><?php echo $this->category->getColumn($row['category'], 'category'); ?></td>
+                                </tr>
+                                <tr>
+                                    <th class="table-secondary fw-bold text-end" style="width: 25%;">Date:</th>
+                                    <td><?php echo (empty($row['date'])) ? "<i>-Not Available-</i>" : $row['date']; ?></td>
+                                </tr> 
+                                <tr>
+                                    <th class="table-secondary fw-bold text-end" style="width: 25%;">status</th>
+                                    <td><?php echo $this->status($row['status']); ?></td>
+                                </tr>
+                            </tbody>
+                        </table>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="row row-cards">
+			<div class="col-12">
+				<div class="card">
+					<div class="card-body">
+						<?php echo $this->partial('partial/attachment.phtml', array('process' => '1307', 'process_id'=> $row['id'], 'applicationNO'=>$row['application_no'], 'login_id' =>$login_id));?>
+					</div>
+                        <div class="btn-list" style="padding-left:20px">
+                            <?php echo $this->button(6,$row['id'],'','3045');?>
+                        </div>
+				<div class="table-responsive">
+                    <table class="table table-bordered table-striped table-hover table-vcenter text-nowrap datatable" id="dataTables">
+                        <thead>
+                            <tr>
+                                <th>Employee</th>
+                                <th>Designation</th> <!-- New column for Designation -->
+                                <th>Status</th>
+                                <th>Work Start Time</th>
+                                <th>Replaced Employee</th>
+                                <th>Replaced Designation</th> <!-- New column for Replaced Employee's Designation -->
+                                <th>Supervisor Remarks (If Absent)</th>
+                                <?php if ($this->button(1) != ""): ?>
+                                    <th class='no-sort'>Action</th>
+                                <?php endif; ?>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($attendence as $rows): ?>
+                                <tr>
+                                    <td><?php echo $this->attendancObj->getColumn($rows['attendance_employee'], 'full_name'); ?></td>
+
+                                    <td><?php echo $this->attendancObj->getColumn($rows['attendance_employee'], 'designation'); ?></td>
+
+                                    <td><?php echo $this->statusObj->getColumn($rows['attendance_status'], 'attendance_status'); ?></td>
+
+                                    <td><?php echo $rows['time']; ?></td>
+
+                                    <td>
+                                        <?php 
+                                        $replacementEmployee = !empty($rows['replacement_employee']) ? $this->attendancObj->getColumn($rows['replacement_employee'], 'full_name') : 'Not Available'; 
+                                        echo $replacementEmployee;
+                                        ?>
+                                    </td>
+
+                                    <td>
+                                        <?php 
+                                        echo !empty($rows['replacement_employee']) 
+                                            ? $this->attendancObj->getColumn($rows['replacement_employee'], 'designation') 
+                                            : 'Not Available';
+                                        ?>
+                                    </td>
+
+                                    <td><?php echo !empty($rows['remarks']) ? $rows['remarks'] : 'Not Available'; ?></td>
+
+                                    <?php if ($this->button(1) != ""): ?>
+                                        <td><?php echo $this->button(6, $rows['id'], '', '3046'); ?></td>
+                                    <?php endif; ?>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+
+					<div class="card-footer d-flex">
+						<div class="col-auto ms-auto d-print-none">
+							<div class="btn-list">
+								<a href="<?php echo $this->url('q',array('action' => 'step1','id'=>$row['id']));?>" class="btn  btn-white">
+									Back
+								</a>
+								<a href="<?php echo $this->url('q',array('action' => 'step3','id'=>$row['id']));?>" class="btn btn-white">
+									Next &nbsp;
+								</a>
+							</div>
+						</div> 
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-hidden="true">
+	<div class="modal-dialog modal-lg" role="document">
+		<div class="modal-content">
+		</div>
+	</div>
+</div>

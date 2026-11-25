@@ -1,0 +1,72 @@
+<?php 
+/**
+ * View -- of Assessment/AssessmentController/updateweighbridgeAction
+ */
+$this->headTitle($this->title);
+?>
+<?php foreach($assesments as $row):
+    endforeach;?>
+<?php foreach($extrantions as $vh):
+    endforeach;?>
+<form id="form" method="post" action="<?php echo $this->url('q', array('action' => 'updateweighbridge')); ?>" enctype="multipart/form-data">
+    <div class="modal-header">
+        <h4 class="modal-title"><i class="icon ti ti-edit"></i>Weight of Loads</h4>
+    </div>
+    <div class="modal-body">
+    <input type="hidden" name="application_id" id="application_id" value="<?php echo $application_id;?>" /> 
+    <input type="hidden" id="extraction_id" name="extraction_id" value="<?php echo $id;?>" />
+        <div class="row">
+            <div class="mb-3 col-lg-6">
+                <div class="form-group">
+                    <label for="permit_no" class="control-label">Permit No</label>
+                    <input type="text" class="form-control" name="permit_no" id="permit_no" value="<?php echo $vh['permit_no'];?>"  required disabled/>
+                </div>
+                <div class="form-group">
+                    <label for="vehicle" class="control-label">Vehicle no</label>
+                    <input type="text" class="form-control" name="vehicle" id="vehicle" value="<?php echo $this->vehicleObj->getColumn($vh['vehicle'],'vehicle')?>"  required disabled/>
+                </div>  
+	 
+            </div>
+			
+              <div class="row">
+                    <div class="mb-3 col-lg-5">
+                        <div class="form-group">
+                            <label for="weight" class="control-label">Weight(Tones)</label>
+                            <input type="text" class="form-control" name="weight" id="weight" required>
+                        </div>
+                    </div> 
+					<div class="mb-3 col-lg-4">
+                        <div class="form-group">
+                            <label for="comments" class="control-label">Comments</label>
+                            <input type="text" class="form-control" name="comments" id="comments" required>
+                        </div>
+                    </div>
+                </div>
+			
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="submit" class="btn btn-success"><i class="fa fa-check"></i> Save </button>
+        <button type="button" class="btn btn-warning" data-dismiss="modal"><i class="fa fa-times"></i> Cancel </button>
+    </div>
+</form>
+<script type="text/javascript">
+$(document).ready(function() {
+    $('#attendance_status').on('change', function() {
+        var status = $(this).val();
+        
+        if (status === 'absent') {
+            $('#absent-details').show();
+        } else {
+            $('#absent-details').hide();
+        }
+    });
+
+    if ($('#attendance_status').val() === 'absent') {
+        $('#absent-details').show();
+    } else {
+        $('#absent-details').hide();
+    }
+});
+</script>

@@ -1,0 +1,139 @@
+<?php
+/**
+ * View -- of Application/IndexController/panel2Action
+ * Updated for Quarterly View Support
+ */
+$this->headTitle($title);
+
+?>
+<?php echo $this->tabs_helper(array(5,6,7)); ?>
+
+<div class="page-header">
+    <div class="row">
+        <div class="col-lg-6">
+            <h1>Dashboard</h1>
+        </div>
+    </div>
+</div>
+
+
+<div class ="row">
+	<form id="#form" method="post" action="<?php echo $this->url('application',array('action'=>'panel2')); ?>"  enctype="multipart/form-data" >
+			<div class="col-lg-2">
+				<label for="period" class="control-label"><b>Period</b> </label>
+				<select name="period" id="period" class="form-control" onchange='this.form.submit()'>
+					<option value=""></option>
+					<?php foreach($period as $periods):?>
+						<option value="<?php echo $periods['id'];?>" <?php echo ($period_id==$periods['id'])?'selected':'';?>>
+							<?php echo $periods['period']; ?>
+						</option>
+					<?php endforeach; ?>
+				</select>
+			</div>
+		</form>
+	</div>
+
+<br>
+<div class="page-body">
+    <div class="container-xl">
+        <div class="row row-deck row-cards">
+        <div class="col-lg-8">
+   <?php
+$Total_target = array();
+$Total_actual = array();
+
+if ($this->targetObj) {
+    $year = date('Y');
+
+    if ($period_id == 1) { 
+        
+        $quarter_months = [
+            1 => [1, 2, 3],    
+            2 => [4, 5, 6],    
+            3 => [7, 8, 9],   
+            4 => [10, 11, 12] 
+        ];
+
+        foreach ($quater as $q) {
+            $quarter_id = $q['id'];
+            $quarter_name = $q['name'];
+            $monthly_ids = $quarter_months[$quarter_id] ?? [];
+
+            $quarter_target = 0;
+            foreach ($monthly_ids as $month_id) { $monthly_target = $this->targetObj->getColumn(['year' => $year,'period' => 2, 'status' => 4,'subperiod' => $month_id], 'target');
+                $quarter_target += (float) $monthly_target;
+            }
+            $Total_target[] = ["label" => $quarter_name, "y" => $quarter_target];
+            $actual_value = $this->groupObj->getSumQuaterly($year, $quarter_id, 'weight');
+            $Total_actual[] = ["label" => $quarter_name, "y" => $actual_value];
+        }
+
+    } elseif ($period_id == 2) { 
+        foreach ($month as $m) {
+            if (isset($m['name'], $m['id'])) {
+                $monthly_target = $this->targetObj->getColumn([ 'year' => $year,'period' => $period_id,'status' => 4,'subperiod' => $m['id'] ], 'target');
+
+                $Total_target[] = ["label" => $m['name'], "y" => (float) $monthly_target];
+
+                $actual_value = $this->groupObj->getActualTotalByMonth($year, $m['id'], 'weight');
+                $Total_actual[] = ["label" => $m['name'], "y" => (float) $actual_value];
+            }
+        }
+    }
+}
+?>
+
+</div>
+
+
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-10">
+        <div class="card">
+            <div class="card-body">
+                <h3 class="card-title text-center">Target vs Actual</h3>
+                <div id="chart1" class="canvas-chart" style="height: 400px;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        var chart1 = new CanvasJS.Chart("chart1", {
+            animationEnabled: true,
+            exportFileName: "TotalMT",
+            exportEnabled: true,
+            axisX: {
+                title: "Period",
+                interval: 1
+            },
+            axisY: {
+                title: "No. of MT"
+            },
+            theme: "light",
+            data: [
+                {
+                    type: "column",
+                    toolTipContent: "Target MT: {y}",
+                    legendText: "Target MT",
+                    showInLegend: true,
+                    indexLabelPlacement: "outside",
+                    dataPoints: <?php echo json_encode($Total_target, JSON_NUMERIC_CHECK); ?>
+                },
+                {
+                    type: "column",
+                    toolTipContent: "Actual MT: {y}",
+                    legendText: "Actual MT",
+                    showInLegend: true,
+                    indexLabelPlacement: "outside",
+                    dataPoints: <?php echo json_encode($Total_actual, JSON_NUMERIC_CHECK); ?>
+                }
+            ]
+        });
+        chart1.render();
+    });
+</script>

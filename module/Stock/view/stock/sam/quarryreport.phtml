@@ -1,0 +1,132 @@
+<?php
+/**
+ * View -- Phuntsho
+ */
+$this->headTitle($this->title);
+//echo '<pre>';print_r($paginator);exit;
+?>
+
+<?php echo $this->partial('stock/sam/partial.phtml', array('active' => 'quarryreport')); ?><br/>
+
+<style>
+    .text-right {
+        text-align: right;
+    }
+</style>
+
+<div class="card">
+    <div class="card-header">
+        <div class="row">
+            <form method="post" action="<?php echo $this->url('sam', array('action' => 'quarryreport')); ?>" enctype="multipart/form-data">
+               <div class="form-group col-lg-2">
+				<label class="control-label" for="start_date">Start Date</label>
+				<div class="date input-group" id="start_date" data-date="<?php echo $data['start_date'];?>" data-date-format="yyyy-mm-dd" >
+					<input class="form-control span2" name="start_date" id="start_date" type="text" placeholder="Start Date" value="<?php echo $data['start_date'];?>"  required>
+					<span class="input-group-addon add-on"><i class="fa fa-calendar"></i></span>
+				</div>
+			</div>
+			<div class="form-group col-lg-2">
+				<label class="control-label" for="end_date">End Date</label>
+				<div class="date input-group" id="end_date" data-date="<?php echo $data['end_date'];?>" data-date-format="yyyy-mm-dd" >
+					<input class="form-control span2" name="end_date" id="end_date" type="text" placeholder="End Date" value="<?php echo $data['end_date'];?>"  required>
+					<span class="input-group-addon add-on"><i class="fa fa-calendar"></i></span>
+				</div>
+			</div>
+
+           <div class="form-group col-lg-2">
+				<label class="control-label" for="type_ofdispatche">Type</label>
+				<select class="form-control" id="type_ofdispatche" name="type_ofdispatche" data-placeholder="Select">
+					<option value="-1">All</option>
+					<?php 
+						foreach($this->itemObj as $items): 
+						//echo '<pre>';print_r($activities);exit;
+						$selected_act = ($items['id']==$data['type_ofdispatche'])?'selected':'';?>
+						<option value="<?php echo $items['id'];?>" <?php echo $selected_act;?>>
+							<?php echo $items['name'];?>
+						</option>
+					<?php endforeach; ?>
+				</select>
+			</div>	
+
+			<div class="form-group col-lg-1"><br>
+				<button type="submit" class="btn btn-sm btn-success pull-right"><i class="fa fa-gear"></i> Generate </button>
+			</div>			
+            </form>
+
+        </div>
+
+        <div>
+            <table class="table table-bordered table-condensed table-striped table-hover" id="dataTables">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Type</th>
+            <th>Truck No</th>
+            <th class="text-right">Quantity</th>
+            <th class="text-right">Trip</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php
+            $truckData = [];
+            $totalWeight = 0;
+            $totalTrips  = 0;
+            $typeMap = [];
+            foreach ($this->itemObj as $item) {
+                $typeMap[$item['id']] = $item['name'];
+            }
+
+            foreach ($paginator as $row) {
+                $vehicle = $row['vehicle'];
+
+                if (!isset($truckData[$vehicle])) {
+                    $truckData[$vehicle] = [
+                        'type_ofdispatche' => $row['type_ofdispatche'],
+                        'total_weight'     => 0,
+                        'trips'            => 0,
+                        'status'           => $row['status'] 
+                    ];
+                }
+                $truckData[$vehicle]['total_weight'] += $row['weight'];
+                $truckData[$vehicle]['trips']++;
+            }
+            $i = 1;
+            foreach ($truckData as $vehicle => $data):
+                $totalWeight += $data['total_weight'];
+                $totalTrips  += $data['trips'];
+        ?>
+        <tr>
+            <td><?php echo $i++; ?></td>
+            <td>
+    <?php 
+        $typeId = $data['type_ofdispatche'];
+        echo isset($typeMap[$typeId]) ? $typeMap[$typeId] : $typeId;
+    ?>
+</td>
+
+            <td><?php echo $vehicle; ?></td>
+            <td class="text-right"><?php echo number_format($data['total_weight'], 2); ?></td>
+            <td class="text-right"><?php echo $data['trips']; ?></td>
+        </tr>
+        <?php endforeach; ?>
+
+   <tr style="font-weight: bold; background-color: #f1f1f1;">
+    <td colspan="3" class="text-right">Total</td>
+    <td class="text-right"><?php echo number_format($totalWeight, 2); ?></td>
+    <td class="text-right"><?php echo $totalTrips; ?></td>
+</tr>
+
+    </tbody>
+</table>
+
+
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $('document').ready(function () {
+        $('#start_date').datepicker();
+            $('#end_date').datepicker();
+    });
+</script>

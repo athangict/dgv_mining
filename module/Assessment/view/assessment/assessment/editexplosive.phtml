@@ -1,0 +1,118 @@
+<?php 
+/**
+ * View -- of Assessment/AssessmentController/editassessmentAction
+ */
+$this->headTitle($this->title);
+?>
+<?php  foreach ($assessmentdetails as $row):
+ endforeach;?>
+<?php  foreach ($explosivedet as $exp):
+ endforeach;?>
+
+
+
+<form id="form" method="post" action="<?php echo $this->url('q', array('action' => 'editexplosive')); ?>" enctype="multipart/form-data">                  
+    <div class="modal-header">
+        <h4 class="modal-title"><i class="icon ti ti-edit"></i>Edit Explosive Details</h4>
+    </div>
+    <div class="modal-body">
+
+    <input type="hidden" name="application_id" id="application_id" value="<?php echo $application_id;?>" /> 
+    <input type="hidden" id="expo_id" name="expo_id" value="<?php echo $id;?>" />
+
+
+    <div class="row">
+    <div class="mb-3 col-lg-6">
+        <label class="form-label" for="explosive_name">Explosive</label>
+        <select id="explosive_name" name="explosive_name" class="form-control" data-placeholder="Select" required>
+            <option value="">Select</option>
+            <?php 
+
+                foreach ($explosive as $explosive_item): ?>
+                    <option value="<?php echo ($explosive_item['id']); ?>" 
+                        <?php echo ($explosive_item['explosive_name'] === $exp['explosive_name']) ? 'selected' : ''; ?>>
+                        <?php echo ($explosive_item['explosive_name']); ?>
+                    </option>
+                <?php endforeach;
+            ?> 
+        </select>
+    </div>
+
+    <div class="mb-3 col-lg-6">
+            <label class="form-label" for="blasters">Blasters</label>
+            <select id="blasters" name="blasters" class="form-control" data-placeholder="Select" required>
+                <option value="" disabled selected>Select</option>
+
+                <?php
+                foreach ($employees as $blaster): ?>
+                    <option value="<?php echo ($blaster['id']); ?>" 
+                        <?php echo ($blaster['full_name'] === $exp['blasters']) ? 'selected' : ''; ?>>
+                        <?php echo ($blaster['full_name']); ?>
+                    </option>
+                <?php endforeach;
+?> 
+ 
+                
+            </select> 
+        </div>
+</div>
+
+        <div class="row">
+        <div class="mb-3 col-lg-6">
+                <label class="form-label" for="no_ofexplosive">Unit</label>
+                <input class="form-control" type="text" name="no_ofexplosive" id="no_ofexplosive"  value="<?php echo $exp['no_ofexplosive'];?>" />
+            </div>
+        </div>     
+    </div>
+    <div class="modal-footer">
+        <button type="submit" class="btn btn-success"><i class="fa fa-check"></i> Save </button>
+        <button type="button" class="btn btn-warning" data-dismiss="modal" ><i class="fa fa-times"></i> Cancel </button> 
+    </div><!-- /modal-footer -->
+</form>
+<style>
+    
+</style>
+<script type="text/javascript">
+$(document).ready(function() {
+
+    const fv = FormValidation.formValidation(document.getElementById('form'), {
+        fields: {
+            date: {
+                validators: {
+                    notEmpty: {
+                        message: 'Please select a date.'
+                    },
+                }
+            },
+            categoryy: {
+                validators: {
+                    notEmpty: {
+                        message: 'Please select a category.'
+                    },
+                }
+            },
+        },
+        plugins: {
+            trigger: new FormValidation.plugins.Trigger(),
+            bootstrap5: new FormValidation.plugins.Bootstrap5({
+                rowSelector: '.mb-3',
+            }),
+            submitButton: new FormValidation.plugins.SubmitButton(),
+            defaultSubmit: new FormValidation.plugins.DefaultSubmit(),
+        },
+    }).on('core.element.validated', function (e) {
+        if (e.valid) {
+            $('div#' + e.field.replace('[]','') + '_chosen').removeClass('is-invalid');
+            $('div#' + e.field.replace('[]','') + '_chosen').addClass('is-valid');
+        } else {
+            $('div#' + e.field.replace('[]','') + '_chosen').removeClass('is-valid');
+            $('div#' + e.field.replace('[]','') + '_chosen').addClass('is-invalid');
+        }
+    });
+
+    $('form select').chosen().change(function () {
+        fv.revalidateField($(this).attr('name'));
+    });
+
+});
+</script>

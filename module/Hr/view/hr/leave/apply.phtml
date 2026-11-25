@@ -1,0 +1,348 @@
+
+<?php
+/**
+ * 
+ * View -- of Hr/LeaveController/indexAction
+ * 
+ */
+	$this->headTitle($this->title);
+	//print_r($leaveTypes);
+	$checkleaveOfficial =$this->userObj->get(array('id'=>$this->userID, 'role'=>4));
+?>
+<style>
+#remarks.red-text {
+    color: red;
+}
+
+</style>
+<form id="#form" method="post" action="<?php echo $this->url('leave', array('action' => 'apply')); ?>"  enctype="multipart/form-data" >
+	<div class="row">
+		<div class="col-lg-12"> 
+			<div class="widget-box transparent">
+				<div class="widget-header widget-header-smaller">
+					<h4 class="widget-title blue bolder smaller"> Leave Application Form </h4>
+				</div>
+				<div class="widget-body">
+					<div class="widget-main padding-24"> 
+						<div class="row">  
+						   <div class="form-group col-lg-4">
+								<label for="applicant" class="control-label">Applicant<span style="color: red;">*</span></label>
+								<input type="hidden"  id="loc" name="loc" />
+								<input type="hidden"  id="region" name="region" />
+								<select class="form-control" id="applicant" name="applicant" data-placeholder="-Select-" required >
+									<option value=""></option>									
+									<?php 
+						
+									    $loginEmployee = $this->employeeObj->get($this->login_emp_ID);
+										if(sizeof($loginEmployee)>0):
+										foreach($loginEmployee as $employee);
+										?>
+										  <option value="<?php echo $employee['id'];?>"><?php echo $employee['full_name'];?> (Emp No. : <?php echo $employee['emp_id'];?>)</option>
+									<?php
+									 endif; 
+							 ?>									
+								</select>
+							</div>		
+							<div class="form-group col-lg-4">
+								 <label for="leave_type" class="control-label">Leave Type <span style="color: red;">*</span></label>
+								<select class="form-control" id="leave_type" name="leave_type" data-placeholder="-Select-" required >
+									<option value=""></option>									
+									<?php 
+									foreach ($this->leaveTypes as $leaveType):
+									?>
+										<option value="<?php echo $leaveType['id'];?>">
+											<?php echo $leaveType['type'];?> 
+										</option>
+									<?php
+									endforeach;
+									?>
+								</select>
+							</div>
+						</div>	
+						<div class="row">  
+						   <div class="form-group col-lg-10" id="empdtl"></div>						   
+						</div>						
+						<div class="row">
+							<div class="col-lg-8  alert alert-info fade in">
+								<h5>Leave Details as of <?php echo date('Y-m-d');?></h5>
+								<table class="table table-striped table-hover table-condensed" >								 
+								  <tbody>
+								  	<tr>
+										  <td>Leave</td>
+										  <td>Leave Taken</td>
+										  <td>Leave Balance</td>
+										</tr> 
+										<?php foreach($leaveTypes as $leavetype):?>
+										<tr>
+											<td><input type="hidden" class="form-control tr_leave_id" id="leave_id" name="leave_id[]" value="<?php echo $leavetype['id'];?>"><?php echo $leavetype['type'];?></td>
+										  <td><input type="text" class="form-control tr_leave_used" id="leave_used" name="leave_used[]" readonly ></td>
+										  <td><input type="text" class="form-control tr_leave_bal" id="leave_bal" name="leave_bal[]" readonly ></td>
+										</tr>
+										<?php endforeach;?>
+								  </tbody>
+								</table>			
+							</div>
+						</div>
+						<div class="row">  
+							<div class="form-group col-lg-4">
+								<label for="start_date" class="control-label">Leave Start Date</label>
+								<div class="date input-group" id="start_date"  >
+									<input class="form-control span2" name="start_date" id="start_date" type="text" placeholder="Start Date"  required>
+									<span class="input-group-addon add-on"><i class="fa fa-calendar"></i></span>
+								</div>
+							</div>
+							<div class="form-group col-lg-4">
+								<label for="end_date" class="control-label">Leave End Date</label>
+								<div class="date input-group" id="end_date" data-date="<?php echo date('Y-m-d');?>" data-date-format="yyyy-mm-dd" >
+									<input class="form-control span2" name="end_date" id="end_date" type="text" placeholder="End Date"  required>
+									<span class="input-group-addon add-on"><i class="fa fa-calendar"></i></span>
+								</div>
+							</div>
+							<div class="form-group col-lg-4" id="half_day">
+							<label for="btn3" class="control-label">Duration</label>
+							<div class="checkbox">
+								<label>
+									<input class="ace" type="radio" name="half" id="half" value="1" />
+									<span class="lbl" style="margin-left: -20px;">Half day</span>
+								</label>
+								<label>
+									<input class="ace" type="radio" name="half" id="half" value="0" checked />
+									<span class="lbl">Full Day</span>
+								</label>
+							</div>
+							</div>		
+						</div>
+						<div class="row">	
+							<div class="form-group col-lg-3">
+								<label for="no_of_days" class="control-label">No. of Days</label>
+								<input type="text" class="form-control" name="no_of_days" id="no_of_days" value="1" readonly> 
+							</div>				  
+							<div class="form-group col-lg-4">
+								<label for="substitute" class="control-label">Substitute</label>
+								<select class="form-control" id="delegation" name="delegation" data-placeholder="-Select-" >
+									<option value=""></option>									
+									<?php 
+									$employees = $this->employeeObj->getEmployee(array('e.status'=>array(1,4,5)));
+									foreach ($employees as $employee):
+									?>
+										<option value="<?php echo $employee['id'];?>">
+											<?php echo $employee['full_name'];?> (<?php echo $employee['emp_id'];?>)
+										</option>
+									<?php
+									endforeach;
+									?>
+								</select>
+							</div>
+						</div>
+						<div class="row">
+							<div class="form-group col-lg-11">
+								<label for="subs_contact" class="control-label">Remarks <span class="orange" style="font-size:11px;"> <i>* Mention the relationship with deceased for BL. </i></span></label>
+								<textarea class="form-control" name="remarks" id="remarks" row="3" col="60" type="text"> </textarea>
+							</div>			
+						</div>
+						<div class="row">
+							<div class="form-group">
+								<label>
+									<input class="ace" type="checkbox"  name="declaration" id="declaration" value="1" style="min-width: 90px;"></input>
+									<span class="lbl"> I hereby certify that the information provided above is correct. Any falsification of information in this record may form ground for disciplinary action, Furthermore; I fully understand that I am not entitled to go on leave until I receive an approved copy of this form.</span>
+								</label>
+							</div>
+							<div>
+								<button id="submit_button" type="submit" class="btn btn-success"><i class="fa fa-check"></i> Next </button>
+								<button type="button" class="btn btn-warning" onclick="javascript:history.back();"><i class="fa fa-times"></i> Cancel </button>  
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</form>
+<script>
+$(document).ready(function() {
+    let approvedDates = []; // store approved leave dates
+    let formattedStartDate, formattedEndDate;
+
+    const noOfDaysInput = $('#no_of_days');
+    const submitButton = $('#submit_button');
+    const remarks = $('#remarks');
+
+    // 1️⃣ Fetch leave details and approved dates when employee changes
+    $('#applicant').on('change', function() {
+        const empId = $(this).val();
+
+        if (!empId) return;
+
+        // Fetch leave balances & approved dates
+        $.post("<?php echo $this->url('leave', ['action' => 'getleavedtls']); ?>",
+            { emp_id: empId },
+            function(data) {
+                console.log(data);
+                approvedDates = data.approved_dates ? [...new Set(data.approved_dates)] : [];
+                $('#region').val(data.empRegion);
+                $('#loc').val(data.empLocation);
+
+                // Populate leave balances
+                data.leave.forEach(function(item) {
+                    const row = $('input[name="leave_id[]"][value="'+item.id+'"]').closest('tr');
+                    row.find('.tr_leave_used').val(item.used);
+                    row.find('.tr_leave_bal').val(item.balance);
+                });
+            },
+            'json'
+        );
+ 
+        // Load employee details
+        $('#empdtl').load("<?php echo $this->url('leave', ['action' => 'displayempdtl']); ?>/" + empId, function() {
+            $("#empdtl").trigger('chosen:updated');
+        });
+    });
+
+    // Initialize datepickers
+   /* $('#start_date, #end_date').datepicker({
+        format: 'yyyy-mm-dd',
+        autoclose: true
+    });*/
+		var serverDate = "<?php echo date('Y-m-d'); ?>";  // server's date
+
+		$('#start_date, #end_date').datepicker({
+			format: 'yyyy-mm-dd',
+			autoclose: true,
+			//startDate: new Date(new Date(serverDate).setDate(new Date(serverDate).getDate() - 10)),
+		
+		});
+
+		$('#start_date, #end_date').datepicker('setDate', serverDate);
+
+// Initialize default values
+formattedStartDate = serverDate;
+formattedEndDate   = serverDate;
+
+// Initial calculation
+validateLeave();
+
+    $('#start_date, #end_date').on('changeDate', function () {
+
+    formattedStartDate = formatDate($('#start_date').datepicker('getDate'));
+    formattedEndDate   = formatDate($('#end_date').datepicker('getDate'));
+
+    validateLeave();
+});
+
+    // Helper: format Date object as YYYY-MM-DD
+    function formatDate(dateObj) {
+        return dateObj.getFullYear() + '-' + 
+               ('0' + (dateObj.getMonth() + 1)).slice(-2) + '-' +
+               ('0' + dateObj.getDate()).slice(-2);
+    }
+
+    // Helper: generate all dates between two dates
+    function getDateRange(start, end) {
+        const arr = [];
+        let dt = new Date(start);
+        while (dt <= new Date(end)) {
+            arr.push(dt.toISOString().slice(0,10));
+            dt.setDate(dt.getDate() + 1);
+        }
+        return arr;
+    }
+
+    // Check for overlap with approved dates
+    function checkLeaveDateOverlap() {
+        if (!formattedStartDate || !formattedEndDate) return false;
+
+        const selectedRange = getDateRange(formattedStartDate, formattedEndDate);
+        const overlaps = selectedRange.filter(date => approvedDates.includes(date));
+
+        if (overlaps.length > 0) {
+            remarks.html("⚠️ Leave already approved on: <b>" + overlaps.join(", ") + "</b>. Please change the dates.")
+                   .css("color", "red");
+            submitButton.prop('disabled', true);
+            return true;
+        } else {
+            remarks.text('').css("color", "");
+            return false;
+        }
+    }
+
+    // Fetch leave days considering holidays/weekends
+	var region=$('#region').val();
+    function updateNumberOfDays(callback) {
+        if (!formattedStartDate || !formattedEndDate) return;
+
+        const leaveType = parseInt($("#leave_type").val(), 10);
+        console.log($('#region').val());
+        let actionUrl;
+
+        // Decide which endpoint to call based on leave type & region
+        if ([2,3,5].includes(leaveType)) {
+			
+           actionUrl =  ($('#region').val()==2) 
+                ? "<?php echo $this->url('leave', ['action'=>'getholidaysRegion']); ?>" 
+               : "<?php  echo $this->url('leave', ['action'=>'getholidaysGpo']); ?>";
+        } else {
+			console.log('else');
+            actionUrl = "<?php echo $this->url('leave', ['action'=>'getweekends']); ?>";
+        }
+
+        $.post(actionUrl,
+            { start_date: formattedStartDate, end_date: formattedEndDate },
+            function(data) {
+                const days = parseFloat(data.non_holiday_days || 0);
+                noOfDaysInput.val(days);
+
+                if (formattedStartDate === formattedEndDate) {
+                    //$('#no_of_days').closest('.form-group').hide();
+                    $('#half_day').closest('.form-group').show();
+					$('input[name="half"]').on('change', function() {
+						console.log($('input[name="half"]:checked').val());
+						var half=$('input[name="half"]:checked').val();
+						if(half=='1'){
+							noOfDaysInput.val(0.5);
+						}
+						else{
+							noOfDaysInput.val(1);
+						}
+						
+						
+					});
+                } else {
+                   // $('#no_of_days').closest('.form-group').show();
+                    $('#half_day').closest('.form-group').hide();
+                }
+
+                if (callback) callback(days);
+            },
+            'json'
+        );
+    }
+
+    // 5️⃣ Validate leave: balance + overlap
+   function validateLeave() {
+    // 1️⃣ Check overlap first
+    const hasOverlap = checkLeaveDateOverlap();
+    if (hasOverlap) {
+        // Stop here if overlap exists
+        return;
+    }
+
+    // 2️⃣ If no overlap, calculate number of days and check balance
+    updateNumberOfDays(function(days) {
+        const leaveType = $("#leave_type").val();
+        const row = $('input.tr_leave_id[value="' + leaveType + '"]').closest('tr');
+        const balance = parseFloat(row.find('.tr_leave_bal').val()) || 0;
+
+        if (days > balance) {
+            submitButton.prop('disabled', true);
+            remarks.text('⚠️ No. of leave days exceeds the balance.').css('color','red');
+        } else {
+            submitButton.prop('disabled', false);
+            remarks.text(''); // safe to clear because no overlap
+        }
+    });
+}
+    // Trigger validation on leave type change
+    $('#leave_type').on('change', validateLeave);
+
+});
+</script>

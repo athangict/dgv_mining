@@ -1,0 +1,203 @@
+<?php
+/**
+ * View -- of Application/IndexController/panel4Action
+ * chophel@athang.com
+ */
+$this->headTitle($title);
+?>
+<?php echo $this->tabs_helper(array(5,6,7)); ?>
+<div class="container-xl">
+    <!-- Page title -->
+    <div class="page-header d-print-none">
+        <div class="row align-items-center">
+            <div class="col">
+                <div class="page-pretitle">Overview</div>
+                <h2 class="page-title">Dashboard</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-body">
+                <h3 class="card-title text-center"> (Revenue)</h3>
+                <div id="chart1" class="canvas-chart" style="height: 400px;"></div>
+
+                <?php
+                $Total_target_1 = array();
+                $Total_actual_1 = array();
+                $year = date('Y');
+
+                foreach ($month as $m) {
+                    $monthly_target = $this->targetObj->getColumn(array('year'=>date('Y'), 'period'=>$m, 'type'=>2), 'target');
+
+                    if (isset($m['period'], $m['id'])) {
+                        array_push($Total_target_1, array("label"=>$m['period'], "y"=>$monthly_target));
+                        $actual = $this->salespObj->getActualTotalByMonth($year, $m['id'], 'rate');
+                        array_push($Total_actual_1, array("label"=>$m['period'], "y"=>$actual));
+                    }
+                }
+                ?>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-body">
+                <h3 class="card-title text-center"> (Cost)</h3>
+                <div id="chart2" class="canvas-chart" style="height: 400px;"></div>
+
+              <?php
+                $Total_target_2 = array();
+                $Total_actual_2 = array();
+                $year = date('Y');
+
+                    foreach ($month as $m) {
+                        $monthly_target = $this->targetObj->getColumn(array('year' => $year,'period' => $m,'type' => 3),'target');
+
+                        if (isset($m['period'], $m['id'])) {
+                            array_push($Total_target_2, array("label" => $m['period'], "y" => $monthly_target));
+                            $actual = $this->financeObj->getActualTotalByMonths($year, $m['id'], 'debit', ['head' => 18]);
+                            array_push($Total_actual_2, array("label" => $m['period'], "y" =>$actual));
+                        }
+                    }
+
+                ?>
+
+            </div>
+        </div>
+    </div>
+
+
+       <div class="col-lg-6">
+        <div class="card">
+            <div class="card-body">
+                <h3 class="card-title text-center">(Profit)</h3>
+                <div id="chart3" class="canvas-chart" style="height: 400px;"></div>
+
+             <?php
+$Total_target_3 = array();
+$Total_actual_3 = array();
+$year = date('Y');
+
+foreach ($month as $m) {
+    if (isset($m['period'], $m['id'])) {
+        // Get revenue and cost targets
+        $revenue_target = $this->targetObj->getColumn([
+            'year' => $year,
+            'period' => $m['period'],
+            'type' => 2
+        ], 'target');
+
+        $cost_target = $this->targetObj->getColumn([
+            'year' => $year,
+            'period' => $m['period'],
+            'type' => 3
+        ], 'target');
+
+        // Calculate target profit: Revenue - Cost
+        $profit_target = floatval($revenue_target) - floatval($cost_target);
+        array_push($Total_target_3, [
+            "label" => $m['period'],
+            "y" => $profit_target
+        ]);
+
+        // Get actual revenue and actual cost
+        $revenue_actual = $this->salespObj->getActualTotalByMonth($year, $m['id'], 'rate');
+        $cost_actual = $this->financeObj->getActualTotalByMonths($year, $m['id'], 'debit', ['head' => 18]);
+
+        // Calculate actual profit: Revenue - Cost
+        $profit_actual = floatval($revenue_actual) - floatval($cost_actual);
+        array_push($Total_actual_3, [
+            "label" => $m['period'],
+            "y" => $profit_actual
+        ]);
+    }
+}
+?>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+<script>
+$(function () {
+    var chart1 = new CanvasJS.Chart("chart1", {
+        animationEnabled: true,
+        exportEnabled: true,
+        title: { text: "" },
+        theme: "light",
+        axisX: { title: "Month", interval: 1 },
+        axisY: { title: "Revenue" },
+        data: [
+            {
+                type: "column",
+                legendText: "Target",
+                showInLegend: true,
+                dataPoints: <?php echo json_encode($Total_target_1, JSON_NUMERIC_CHECK); ?>
+            },
+            {
+                type: "column",
+                legendText: "Actual",
+                showInLegend: true,
+                dataPoints: <?php echo json_encode($Total_actual_1, JSON_NUMERIC_CHECK); ?>
+            }
+        ]
+    });
+    chart1.render();
+
+    var chart2 = new CanvasJS.Chart("chart2", {
+        animationEnabled: true,
+        exportEnabled: true,
+        title: { text: "" },
+        theme: "light",
+        axisX: { title: "Month", interval: 1 },
+        axisY: { title: "Cost" },
+        data: [
+            {
+                type: "column",
+                legendText: "Target",
+                showInLegend: true,
+                dataPoints: <?php echo json_encode($Total_target_2, JSON_NUMERIC_CHECK); ?>
+            },
+            {
+                type: "column",
+                legendText: "Actual",
+                showInLegend: true,
+                dataPoints: <?php echo json_encode($Total_actual_2, JSON_NUMERIC_CHECK); ?>
+            }
+        ]
+    });
+    chart2.render();
+
+
+      var chart3 = new CanvasJS.Chart("chart3", {
+        animationEnabled: true,
+        exportEnabled: true,
+        title: { text: "" },
+        theme: "light",
+        axisX: { title: "Month", interval: 1 },
+        axisY: { title: "Profit" },
+        data: [
+            {
+                type: "column",
+                legendText: "Target",
+                showInLegend: true,
+                dataPoints: <?php echo json_encode($Total_target_3, JSON_NUMERIC_CHECK); ?>
+            },
+            {
+                type: "column",
+                legendText: "Actual",
+                showInLegend: true,
+                dataPoints: <?php echo json_encode($Total_actual_3, JSON_NUMERIC_CHECK); ?>
+            }
+        ]
+    });
+    chart3.render();
+});
+</script>

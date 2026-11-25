@@ -1,0 +1,115 @@
+<?php
+/**
+ * View for adding a machine in the MachinebdController/addmachineAction
+ */
+?>
+<form id="form" method="post" action="<?php echo $this->url('machinebd', array('action' => 'addmachine')); ?>" enctype="multipart/form-data">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title"> <i class="fa fa-asterisk"></i> Add Machine</h4>
+    </div> <!-- /modal-header -->
+    
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="form-group">
+                    <label for="machine_type" class="control-label">Machine Type</label>
+                    <input class="form-control" type="text" name="machine_type" id="machine_type" placeholder="Machine Type" required />
+                </div>
+
+                <div class="form-group">
+                    <label for="cause" class="control-label">Cause of Breakdown</label>
+                    <textarea class="form-control" name="cause" id="cause" placeholder="Cause" required></textarea>
+                </div>
+             
+
+                <div class="form-group">
+                    <label for="duration_of_bd" class="control-label">Duration of Breakdown</label>
+                    <input class="form-control" type="text" name="duration_of_bd" id="duration_of_bd" placeholder="Duration of Breakdown" required />
+                </div>
+
+                <div class="form-group">
+                    <label for="person_involved" class="control-label">Person Involved</label>
+                    <input class="form-control" type="text" name="person_involved" id="person_involved" placeholder="Person Involved" required />
+                </div>
+
+                <div class="form-group">
+                    <label for="action_taken" class="control-label">Action Taken</label>
+                    <textarea class="form-control" name="action_taken" id="action_taken" placeholder="Action Taken" required></textarea>
+                </div>
+
+            </div>
+        </div>
+    </div> <!-- /modal-body -->
+    
+    <div class="modal-footer">
+        <button type="submit" class="btn btn-success"><i class="fa fa-check"></i> Save </button>
+        <button type="button" class="btn btn-warning" data-dismiss="modal"><i class="fa fa-times"></i> Cancel </button>
+    </div>
+</form>
+
+<script>
+$(function() {
+
+    const fv = FormValidation.formValidation(document.getElementById('form'), {
+        fields: {
+            machine_type: {
+                validators: {
+                    notEmpty: {
+                        message: 'Please provide the machine type.'
+                    }
+                }
+            },
+            cause: {
+                validators: {
+                    notEmpty: {
+                        message: 'Please provide the cause.'
+                    }
+                }
+            },
+            duration_of_bd: {
+                validators: {
+                    notEmpty: {
+                        message: 'Please provide the duration of breakdown.'
+                    }
+                }
+            },
+            person_involved: {
+                validators: {
+                    notEmpty: {
+                        message: 'Please provide the name of the person involved.'
+                    }
+                }
+            },
+            action_taken: {
+                validators: {
+                    notEmpty: {
+                        message: 'Please describe the action taken.'
+                    }
+                }
+            },
+            status: {
+                validators: {
+                    notEmpty: {
+                        message: 'Please select the status.'
+                    }
+                }
+            }
+        },
+        plugins: {
+            trigger: new FormValidation.plugins.Trigger(),
+            bootstrap3: new FormValidation.plugins.Bootstrap3(),
+            submitButton: new FormValidation.plugins.SubmitButton(),
+            defaultSubmit: new FormValidation.plugins.DefaultSubmit(),
+        },
+    }).on('core.element.validated', function (e) {
+        const element = $('#' + e.field.replace('[]', ''));
+        if (e.valid) {
+            element.removeClass('is-invalid').addClass('is-valid');
+        } else {
+            element.removeClass('is-valid').addClass('is-invalid');
+        }
+    });
+
+});
+</script>

@@ -1,0 +1,110 @@
+<?php 
+/**
+ * View -- of Assessment/AssessmentController/editattendanceAction
+ */
+$this->headTitle($this->title);
+?>
+<?php foreach($attendance as $rows):
+    endforeach;?>  
+    <?php foreach($attendances as $row):
+    endforeach;?>  
+<form id="form" method="post" action="<?php echo $this->url('q', array('action' => 'editattendance')); ?>" enctype="multipart/form-data">                  
+
+    <div class="modal-header">
+        <h4 class="modal-title"><i class="icon ti ti-edit"></i> Edit Status at the field</h4>
+    </div>
+
+    <div class="modal-body">
+    <input type="hidden" name="application_id" id="application_id" value="<?php echo $application_id;?>" /> 
+    <input type="hidden" id="att_id" name="att_id" value="<?php echo $id;?>" />
+        <div class="row">
+        <div class="mb-3 col-lg-6">
+                <label class="form-label" for="attendance_employee">Employee</label>
+                <select id="attendance_employee" name="attendance_employee" class="form-control" data-placeholder="Select" required>
+                    <option value="" disabled selected>Select</option>
+                    <?php foreach ($emp as $employee): ?>
+                        <option value="<?php echo ($employee['id']); ?>">
+                                <?php echo ($employee['full_name']); ?>
+                            </option>
+                    <?php endforeach; ?>
+                </select>  
+            </div>
+
+         
+        <div class="mb-3 col-lg-6">
+            <label class="form-label" for="attendance_status">Status</label>
+            <select id="attendance_status" name="attendance_status" class="form-control" data-placeholder="Select" required>
+                <option value="" disabled>Select</option>
+                <option value="2" <?php echo ($row['attendance_status'] == '2') ? 'selected' : ''; ?>>Present</option>
+                <option value="1" <?php echo ($row['attendance_status'] == '1') ? 'selected' : ''; ?>>Absent</option>
+            </select> 
+        </div>
+
+        <div id="absent-details" style="display: <?php echo ($row['attendance_status'] == '1') ? 'block' : 'none'; ?>;">
+            <div class="mb-3 col-lg-6">
+                <label class="form-label" for="remarks">Reason for Absence</label>
+                <textarea id="remarks" name="remarks" class="form-control" rows="3" placeholder="Enter the reason for absence"><?php echo $row['remarks']; ?></textarea>
+            </div>
+
+            <div class="mb-3 col-lg-6">
+                    <label class="form-label" for="replacement_employee">Replacement Employee</label>
+                    <select id="replacement_employee" name="replacement_employee" class="form-control" data-placeholder="Select">
+                        <option value="" disabled selected>Select Replacement</option>
+                        <?php foreach ($emp as $attendance_employee): ?>
+                            <option value="<?php echo ($attendance_employee['id']); ?>">
+                                <?php echo ($attendance_employee['full_name']); ?>
+                            </option>
+                        <?php endforeach; ?>											
+                    </select> 
+                </div>
+
+        </div>
+
+        <div class="mb-3 col-lg-6"> 
+            <div class="form-group">
+                <label for="time" class="control-label">Time</label>
+                <input type="time" class="form-control" name="time" id="time" value="<?php echo $row['time'];?>" />
+            </div> 
+        </div>
+    </div>
+    </div>
+
+    <div class="modal-footer">
+        <button type="submit" class="btn btn-success"><i class="fa fa-check"></i> Save </button>
+        <button type="button" class="btn btn-warning" data-dismiss="modal" ><i class="fa fa-times"></i> Cancel </button> 
+    </div>
+</form>
+
+<script type="text/javascript">
+
+$(document).ready(function() {
+
+$('#attendance_status').on('change', function() {
+    var status = $(this).val();
+    
+    if (status === '1') {
+        $('#absent-details').show();
+    } else {
+        $('#absent-details').hide();
+    }
+});
+
+if ($('#attendance_status').val() === '1') {
+    $('#absent-details').show();
+} else {
+    $('#absent-details').hide();
+}
+const fv = FormValidation.formValidation(document.getElementById('form'), {
+        
+        plugins: {
+            trigger: new FormValidation.plugins.Trigger(),
+            bootstrap5: new FormValidation.plugins.Bootstrap5({
+                rowSelector: '.mb-3',
+            }),
+            submitButton: new FormValidation.plugins.SubmitButton(),
+            defaultSubmit: new FormValidation.plugins.DefaultSubmit(),
+        },
+    });
+});
+
+</script>

@@ -1,0 +1,138 @@
+<?php
+/**
+ * View -- of Purchase/PurchaseController/addporderAction
+ */
+  $this->headTitle($this->title);
+  foreach($target as $row);
+?>
+<div class="row">
+	<div class="col-lg-12">
+		<div class="widget widget-box">
+			<div class="widget-header">
+				<h5 class="widget-title lighter smaller">
+					<i class="fa fa-asterisk"></i>&nbsp;&nbsp;Edit Target
+				</h5>
+			</div><!-- end of widget-header -->
+			<div class="widget-body">
+				<div class="widget-main">
+					<form id="#form" method="post" action="<?php echo $this->url('target', array('action' => 'edittarget','id'=>$row['id'])); ?>"  enctype="multipart/form-data" >    
+                    <input type="hidden" name="target_id" id="target_id" value="<?= $targets['id'] ?? '' ?>">
+                    <div class="row">
+						<div class="col-lg-12">
+							<div class="form-group">
+								<label for="year" class="control-label">Year</label>
+								<select class="form-control" name="year" id="year" required>
+									<?php
+									$currentYear = date('Y');
+									$selectedYear = $row['year'] ?? $currentYear;
+									for ($y = $currentYear; $y >= 2023; $y--) {
+										$selected = ($y == $selectedYear) ? 'selected' : '';
+										echo "<option value=\"$y\" $selected>$y</option>";
+									}
+									?>
+								</select>
+							</div>
+						</div>
+
+
+
+					<div class="col-lg-12"> 
+								<div class="form-group">
+									<label for="period" class="control-label">Period</label>
+									<select id="period" name="period" class="form-control" data-placeholder="Select" required>
+										<option value=""></option>	
+										<?php foreach ($this->periods as $target_periods): ?>
+											<option value="<?php echo $target_periods['id'];?>" <?php echo ($targets['period']==$target_periods['id'])?'selected':'';?>>
+												<?php echo $target_periods['period']; ?>
+											</option>
+										<?php endforeach; ?>								
+									</select> 
+								</div>
+							</div>
+
+							<div class="col-lg-12">
+								<div class="form-group">
+									<label for="subperiod" class="control-label">Sub Period</label>
+									<input type="text" class="form-control" name="subperiod" id="subperiod" value="<?php echo $targets['subperiod'];?>" placeholder="sub period"/> 
+								</div>
+							</div> 
+
+			 <div class="col-lg-12">
+                <div class="form-group">
+                    <label for="target" class="control-label">Target</label>
+                    <input class="form-control" name="target" id="target" type="text"
+                           value="<?= $row['target'] ?? '' ?>" placeholder="Enter target Target">
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button type="submit" class="btn btn-success"><i class="fa fa-check"></i> Save </button>
+        <button type="button" class="btn btn-warning" data-dismiss="modal"><i class="fa fa-times"></i> Cancel </button>
+    </div> 
+</form>
+
+				</div><!-- widget widget-main -->
+			</div>  <!-- widget widget-body -->   
+		</div> <!-- widget widget-box --> 
+	</div><!-- col-lg-12 -->
+</div><!-- row -->
+
+<script type="text/javascript">	 
+$(function() {
+    $('#date').datepicker({ format: "yyyy-mm-dd", autoclose: true });
+	/* Form Validation of PO */
+	const fv = FormValidation.formValidation(document.getElementById('#form'), {
+		fields: {
+			'year': {
+				validators: {
+					notEmpty: {
+						message: 'Please select Year'
+					}
+				}
+			},
+			'type': {
+				validators: {
+					notEmpty: {
+						message: 'Please select Type'
+					}
+				}
+			},
+			'period': {
+				validators: {
+					notEmpty: {
+						message: 'Please select Period'
+					}
+				}
+			},
+			
+			'target':{
+				validators:{
+					notEmpty:{
+						message:'Please provide Target',
+					},
+				},
+			},
+		},
+		plugins: {
+			trigger: new FormValidation.plugins.Trigger(),
+			bootstrap3: new FormValidation.plugins.Bootstrap3(),
+			submitButton: new FormValidation.plugins.SubmitButton(),
+			defaultSubmit: new FormValidation.plugins.DefaultSubmit(),
+		},
+	}).on('core.element.validated', function (e) {
+		if (e.valid) {
+			$('div#'+ e.field.replace('[]','') +'_chosen').removeClass('is-invalid');
+			$('div#'+ e.field.replace('[]','') +'_chosen').addClass('is-valid');
+		} else {
+			$('div#'+ e.field.replace('[]','') +'_chosen').removeClass('is-valid');
+			$('div#'+ e.field.replace('[]','') +'_chosen').addClass('is-invalid');
+		}
+	});
+	//$('#po_date').on('changeDate',function(){
+	//	$('form').formValidation('revalidateField', $(this).attr('id'));
+	//});
+});      
+</script>

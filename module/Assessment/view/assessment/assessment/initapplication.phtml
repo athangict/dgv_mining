@@ -1,0 +1,52 @@
+<?php 
+/**
+ * View -- of Protection/ProtectionController/initapplicationAction
+ */
+
+$this->headTitle($this->title);
+foreach($heritage as $row);
+echo '<pre>';print_r($heritage);exit;
+?>
+<?php 
+if(empty($ini_id)):?>
+<form id="#form" method="post" action="<?php echo $this->url('q', array('action' => 'initapplication','id'=>$id)); ?>" enctype="multipart/form-data">                  
+    <div class="modal-header">
+        <h4 class="modal-title"> <i class="icon ti ti-tie"></i><?php echo $this->title; ?></i></h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>  <!-- /modal-header -->
+    <div class="modal-body">   
+        <div class="panel"> 
+			<p>Confirm Initiate Application on Heritage No. <b><?php echo $row['heritage_no']; ?></b> ? </p>
+        </div>
+		<input type="hidden" name="heritage_no" id="heritage_no" value="<?php echo $row['heritage_no'];?>" /> 
+        <input type="hidden" name="heritage_name_en" id="heritage_name_en" value="<?php echo $row['heritage_name_en'];?>" /> 
+        <input type="hidden" name="category" id="category" value="<?php echo $row['category'];?>" /> 
+        <input type="hidden" name="identity" id="identity" value="<?php echo $row['identity'];?>" /> 
+        <input type="hidden" name="material_wall" id="material_wall" value="<?php echo $row['material_wall'];?>" /> 
+        <input type="hidden" name="floor_no" id="floor_no" value="<?php echo $row['floor_no'];?>" /> 
+        <input type="hidden" name="district" id="district" value="<?php echo $row['district'];?>" /> 
+        <input type="hidden" name="block" id="block" value="<?php echo $row['block'];?>" />
+        <input type="hidden" name="village" id="village" value="<?php echo $row['village'];?>" /> 
+    </div>
+    <div class="modal-footer">
+        <button type="submit" class="btn btn-success"><i class="icon ti ti-check"></i>Yes</button>
+        <button type="button" class="btn btn-warning" data-bs-dismiss="modal"><i class="icon ti ti-x"></i>Cancel</button> 
+    </div>
+</form>
+<?php else:?>  
+    <form method="post" id ="form" action="<?php echo $this->url('protapp', array('action' => 'step4','id'=>$ini_id)); ?>"  enctype="multipart/form-data" >
+		
+		<div class="modal-header">
+			<h4 class="modal-title"> <i class="icon ti ti-tie"></i><?php echo $this->title; ?></i></h4>
+			<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div><!-- /modal-header -->
+		<div class="modal-body">
+			<h5 class="modal-title"><em>You have already <strong>Initiated</strong> Heritage No.<strong><?php echo $row['heritage_no']; ?></strong> for Application.</em></h5>
+        </div><!-- /modal-footer -->
+		<div class="modal-footer">
+			<button type="submit" class="btn btn-success"><i class="icon ti ti-check"></i>Yes</button>
+			<button type="button" class="btn btn-warning" data-bs-dismiss="modal"><i class="icon ti ti-x"></i>Cancel</button> 
+        </div><!-- /modal-footer -->
+	</form>
+<?php endif;?> 
+

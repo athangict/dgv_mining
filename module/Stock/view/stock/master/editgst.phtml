@@ -1,0 +1,52 @@
+<?php
+/**
+ * 
+ * View -- of Stock/MasterController/edituomAction
+ * 
+ */
+?>
+<?php 
+    foreach($this->gst as $gst):
+        extract($gst);        
+    endforeach;
+?>
+
+<form id="#form" method="post" action="<?php echo $this->url('stmaster', array('action' => 'editgst', 'id' => $id)); ?>"  enctype="multipart/form-data" >                  
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title"> <i class="fa fa-pencil-square-o"></i> Edit Good and Services Tax</h4>
+    </div>  <!-- /modal-header -->
+    
+    <div class="modal-body">       
+		<div class="panel panel-default">                       
+			<div class="panel-body"> 
+				<div class="form-group">
+				</div>
+				<div class="form-group">
+					<label for="gst_tax" class="control-label">Edit GST</label>
+					<input type="text" class="form-control" name="gst_tax" id="gst_tax" value="<?php echo $gst_tax;?>" size="30" required> 
+				</div>
+				
+			</div>
+		</div>
+	</div> <!-- /modal-body -->    
+    <div class="modal-footer">
+        <button type="submit" class="btn btn-success"><i class="fa fa-check"></i> Save </button>
+        <button type="button" class="btn btn-warning" data-dismiss="modal" ><i class="fa fa-times"></i> Cancel </button> 
+    </div>
+</form>
+<script>
+$('document').ready(function(){
+	$('select').chosen({ allow_single_deselect: true });
+	const fv = FormValidation.formValidation(document.getElementById('#form'), {
+	}).on('core.element.validated', function (e) {
+		if (e.valid) {
+			$('div#'+ e.field.replace('[]','') +'_chosen').removeClass('is-invalid');
+			$('div#'+ e.field.replace('[]','') +'_chosen').addClass('is-valid');
+		} else {
+			$('div#'+ e.field.replace('[]','') +'_chosen').removeClass('is-valid');
+			$('div#'+ e.field.replace('[]','') +'_chosen').addClass('is-invalid');
+		}
+	});
+});
+</script>

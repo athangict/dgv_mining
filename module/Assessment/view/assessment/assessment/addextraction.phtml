@@ -1,0 +1,158 @@
+<?php 
+/**
+ * View -- of Assessment/AssessmentController/addassessmentAction
+ */
+$this->headTitle($this->title);
+?>
+<!-- Form Starts -->
+<form id="form" method="post" action="<?php echo $this->url('q', ['action' => 'addextraction']); ?>" enctype="multipart/form-data">                   
+    <div class="modal-header">
+        <h4 class="modal-title"><i class="icon ti ti-edit"></i> Load Dispatch</h4>
+    </div>
+    <div class="modal-body">
+        <input type="hidden" name="application_id" id="application_id" value="<?php echo $application_id;?>" /> 
+        
+        <div class="row mb-3">
+            <!-- Company Selection -->
+            <div class="col-lg-5">
+                <label for="company" class="control-label">Company</label>
+                <select class="form-control chosen-widget" id="company" name="company" data-placeholder="Select" required>
+                    <option value="">Select</option>
+                    <?php
+                    $addedCompanies = [];
+                    foreach ($companies as $com):
+                        if (!in_array($com['company'], $addedCompanies)):
+                            $addedCompanies[] = $com['company'];
+                    ?>
+                        <option value="<?php echo $com['company']; ?>">
+                            <?php echo $this->exreactObj->getColumn($com['company'], 'company'); ?>
+                        </option>
+                    <?php endif; endforeach; ?>
+                </select>
+            </div>
+
+            <!-- Vehicle Selection -->
+            <div class="col-lg-5">
+                <label for="vehicle" class="control-label">Truck No</label>
+                <select class="form-control chosen-widget" id="vehicle" name="vehicle" data-placeholder="Select" required>
+                    <option value="" disabled selected>Select</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Dispatch Load Type -->
+        <div class="row mb-3">
+            <div class="col-lg-5">
+                <label for="type_ofdispatche" class="form-label">Dispatch Load Type</label>
+                <select class="form-control" id="type_ofdispatche" name="type_ofdispatche" required>
+                    <option value="" disabled selected>Select a Dispatch</option>
+                    <?php foreach ($Dispatchs as $type): ?>
+                        <option value="<?php echo $type['id']; ?>"><?php echo $type['name']; ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+
+            <div class="col-lg-5">
+                <label for="driver_name" class="form-label">Driver Name</label>
+                <input class="form-control" type="text" name="driver_name" id="driver_name" placeholder="Enter Driver Name" required>
+            </div>
+
+            <div class="col-lg-5">
+                <label for="location" class="form-label">Location</label>
+                <select class="form-control" id="location" name="location" required>
+                    <option value="" disabled selected>Select a Location</option>
+                    <?php foreach ($locationObj as $location): ?>
+                        <option value="<?php echo $location['id']; ?>"><?php echo $location['location']; ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+
+            <div class="col-lg-5">
+                <label for="permit_no" class="form-label">Permit No</label>
+                <input class="form-control" type="text" name="permit_no" id="permit_no" placeholder="Enter Permit No" required>
+            </div>
+        </div>
+
+        <!-- Weight -->
+        <div class="row mb-3">
+            <div class="col-lg-5">
+                <label for="aprox_weight" class="form-label">Approximate Weight (Tonnes)</label>
+                <input class="form-control" type="text" name="aprox_weight" id="aprox_weight" placeholder="Enter Approximate Weight" required>
+            </div>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="modal-footer">
+            <button type="submit" class="btn btn-success"><i class="fa fa-check"></i> Save</button>
+            <button type="button" class="btn btn-warning" data-dismiss="modal"><i class="fa fa-times"></i> Cancel</button> 
+        </div>
+    </div>
+</form>
+<script type="text/javascript">
+$(function() {
+    // Initialize Chosen dropdowns
+    $('.chosen-widget').chosen({
+        width: '100%',
+        no_results_text: 'No match found!',
+        placeholder_text_single: 'Select'
+    });
+
+    // AJAX load vehicles when company is selected
+    $('#company').on('change', function() {
+        var companyId = $(this).val();
+        var applicationId = $('#application_id').val();
+
+        $.post(
+            "<?php echo $this->url('q', ['action' => 'getvehicles']); ?>",
+            {
+                comID: companyId,
+                applicationId: applicationId
+            },
+            function(data) {
+                $('#vehicle').html(data.vehicle); // Backend should return <option> elements
+                $('#vehicle').trigger('chosen:updated'); // Refresh Chosen
+            },
+            'json'
+        );
+    });
+
+    // Form Validation
+    const fv = FormValidation.formValidation(document.getElementById('form'), {
+        fields: {
+            company: {
+                validators: {
+                    notEmpty: { message: 'Please select a company.' }
+                }
+            },
+            vehicle: {
+                validators: {
+                    notEmpty: { message: 'Please select a vehicle.' }
+                }
+            },
+            permit_no: {
+                validators: {
+                    notEmpty: { message: 'Please enter the permit number.' }
+                }
+            },
+            aprox_weight: {
+                validators: {
+                    notEmpty: { message: 'Please enter the approximate weight.' }
+                }
+            }
+        },
+        plugins: {
+            trigger: new FormValidation.plugins.Trigger(),
+            bootstrap5: new FormValidation.plugins.Bootstrap5({
+                rowSelector: '.mb-3'
+            }),
+            submitButton: new FormValidation.plugins.SubmitButton(),
+            defaultSubmit: new FormValidation.plugins.DefaultSubmit()
+        }
+    });
+
+    // Revalidate fields on change for Chosen dropdowns
+    $('.chosen-widget').on('change', function() {
+        fv.revalidateField($(this).attr('name'));
+    });
+});
+</script>

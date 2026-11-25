@@ -1,0 +1,709 @@
+<?php
+/**
+ * 
+ * View -- of Accounts/AssetController/addtransactionAction
+ * 
+ */
+?>
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
+<style>
+    .input-cell {
+        max-width: 100px; /* Adjust the value as per your requirement */
+    }
+	<style>
+	.mytable tr th,.mytable tr td {
+		padding:5px;
+	}
+</style>
+<?php foreach($sales as $sales);?>
+<div class="row">
+	<div class="col-lg-12">
+        <div class="widget widget-box">
+            <div class="widget-header">
+            	<h5 class="widget-title lighter smaller">
+				Edit Sales Entry
+				</h5>
+	             </h5>
+            </div>
+            <div class="widget-body">
+				<div class="widget-main">
+					<form  id="itemForm" method="post" action="<?php echo $this->url('pos', array('action' => 'editsales','id'=>$sales['id'])); ?>"  enctype="multipart/form-data" >   
+						<div class="row">
+							<input type="hidden" name="sales_no" id="sales_no" value="<?php echo $sales['sales_no']?>">
+							<div class="form-group col-lg-3">
+								<label for="sales_date" class="control-label">Sales Date</label>
+								<div class="date input-group" id="sales_date" data-date="<?php echo date('Y-m-d');?>" data-date-format="yyyy-mm-dd" >
+									<input class="form-control span2" name="sales_date" id="sales_date" type="text" value="<?php echo $sales['sales_date'];?>" placeholder="Sales Date" required>
+									<span class="input-group-addon add-on"><i class="fa fa-calendar"></i></span>
+								</div>
+							</div>
+							<div class="form-group col-lg-3">
+								<label for="location" class="control-label">Location </label>
+								<select class="form-control" name="location" id="location" data-placeholder="Select" required >
+									<option value=""></option>
+									<?php foreach($this->locationObj->get(array('id'=>$admin_location)) as $location):
+										$loc_selected = ($source_loc == $location['id'])?'selected':'';?>
+										<option value="<?php echo $location['id'];?>" <?php echo ($sales['location']==$location['id'])?'selected':'';?>>
+											<?php echo $location['location'];?>
+										</option>
+									<?php endforeach; ?>
+								</select>
+							</div>
+							<div class="form-group col-lg-3">
+								<label for="sales_person" class="control-label">Sales Person</label>
+								<select class="form-control" name="sales_person" id="sales_person" data-placeholder="Select" required >
+									<option value=""></option>
+										<?php foreach($employees as $employee):?>
+										<option value="<?php echo $employee['id'];?>" <?php echo ($sales['salesperson']==$employee['id'])?'selected':'';?> >
+											<?php echo $employee['name'];?>
+										</option>
+									<?php endforeach;?>
+								</select>
+							</div>
+									<div class="form-group col-lg-3">
+								<label for="credit" class="control-label">Credit/Advance</label>
+								<div class="radio">
+								<?php 
+										$checked1 =($sales['credit']=='y')? 'checked':'';
+										$checked2 =($sales['credit']=='1')? 'checked':'';
+										$checked3 =($sales['credit']=='n')? 'checked':'';
+									?>
+									<label>  
+										<input class="ace" type="radio" name="credit"  value="y" <?php echo $checked1?>/>
+										<span class="lbl"> Credit </span>
+									</label> 
+									<label>  
+										<input class="ace" type="radio" name="credit" value="1" <?php echo $checked2?>/>
+										<span class="lbl"> Advance </span>
+									</label> 
+									<label> 
+										<input class="ace" type="radio" name="credit" value="n" <?php echo $checked3?>/> 
+										<span class="lbl"> No </span>
+									</label>
+								</div>
+							</div>
+							<div class="form-group col-lg-3"> 
+							<label for="activity" class="control-label">Activity </label>
+							<select class="form-control" name="activity" id="activity" data-placeholder="Select" required >
+								<option value=""></option>
+								<?php foreach($activity as $activitys):?>
+									<option value="<?php echo $activitys['id'];?>" <?php echo ($activitys['id']==$sales['activity'])?'selected':'';?>>
+										<?php echo $activitys['activity'];?>
+									</option>
+								<?php endforeach; ?>
+							</select>
+						</div>
+							<div class="form-group col-lg-3" id="payment">
+								<label for="payment_type" class="control-label">Payment Mode</label>
+								<select class="form-control" name="payment_type" id="payment_type" data-placeholder="Select">
+									<?php 
+										$selected1 =($sales['payment_type']=='0')? 'selected':'';
+										$selected2 =($sales['payment_type']=='1')? 'selected':'';
+										$selected3 =($sales['payment_type']=='2')? 'selected':'';
+									?>
+									<option value="0" <?php echo $selected1?> >None</option>
+									<option value="1" <?php echo $selected2?> >Cash</option>
+									<option value="2" <?php echo $selected3?>>Bank</option>
+								</select>
+							</div>
+							<div class="form-group col-lg-3" id="account">
+								<label for="account_no" class="control-label">Account No.</label>
+								<select class="form-control" name="account_no" id="account_no" data-placeholder="Select" required>
+									<option value="0"></option>
+									<?php if($sales['payment_type']=='2'):
+										foreach($accounts as $acc): ?>
+										<option value="<?php echo $acc['id'];?>" <?php echo ($sales['account_no']==$acc['id'])?'selected':'';?>>
+											<?php echo $acc['code']; ?>
+										</option>
+										<?php endforeach;  else: foreach($cash as $cash):?>
+										<option value="<?php echo $cash['id'];?>" <?php echo ($sales['account_no']==$cash['id'])?'selected':'';?>>
+											<?php echo $cash['cash_account_name']; ?>
+										</option>
+									<?php endforeach; endif;?>
+								</select>
+							</div>
+							<div class="form-group col-lg-3">
+							<label for="name" class="control-label">Customer Name</label>
+							<input type="text" class="form-control" name="name" id="name" placeholder="Customer Name" value="<?php echo $sales['customer_name'];?>">
+						</div>
+							<div class="form-group col-lg-3">
+								<label for="cid" class="control-label">Customer CID</label>
+								<input type="text" class="form-control" name="cid" id="cid" placeholder="Customer CID" value="<?php echo $sales['customer_cid'];?>" >
+							</div><div class="form-group col-lg-3">
+								<label for="phone" class="control-label">Phone No.</label>
+								<input type="text" class="form-control" name="phone" id="phone" placeholder="Phone No" value="<?php echo $sales['phone'];?>">
+							</div>
+									<div class="form-group col-lg-3" id="journel"style="display:none;">
+										<label for="jrnl_no" class="control-label">Journel No.</label>
+										<input type="text" class="form-control" name="jrnl_no" id="jrnl_no" value="" placeholder="Journel No">
+									</div>
+								
+							<div class="form-group col-lg-3" id="customers">
+								<label for="customer" class="control-label">Party</label>
+								<select class="form-control" name="customer" id="customer" data-placeholder="Select">
+									<option value=""></option>
+									<?php foreach($customers as $cus):?>
+										<option value="<?php echo $cus['id'];?>" <?php echo ($sales['customer']==$cus['id'])?'selected':'';?>>
+											<?php echo $cus['name'];?>
+										</option>
+									<?php endforeach; ?>
+								</select>
+							</div>
+							<div class="form-group col-lg-3" id="due_dates">
+								<label for="due_date" class="control-label">Due Date</label> 
+								<div class="date input-group" id="due_date" data-date="<?php echo date('Y-m-d');?>" data-date-format="yyyy-mm-dd" >
+									<input class="form-control span2" name="due_date" id="due_date" type="text" value="<?php echo date('Y-m-d');?>" placeholder="Sales Date" required>
+									<span class="input-group-addon add-on"><i class="fa fa-calendar"></i></span>
+								</div>
+							</div>
+							<div class="form-group col-lg-3" id="ref_no" style="display:none;">
+							<label for="ref_no" class="control-label">Reference No</label>
+							<input type="text" class="form-control" name="ref_no" id="ref_no" placeholder="Reference No" >
+						</div>
+							<div class="form-group col-lg-3">
+							<label for="discount" class="control-label">Discount</label>
+							<select class="form-control" name="discount" id="discount" data-placeholder="Select" required >
+								<?php for($i=0;$i<=100;$i++):?>
+									<option value="<?php echo $i;?>" <?php echo ($i==$sales['discount'])?'selected':'';?>><?php echo $i.'%';?></option>
+									<?php endfor;?>
+							</select>
+						</div>
+						</div>
+						<div class="row">
+						<div class="col-lg-12">
+							<h3>Item Details</h3>
+							<table id="item_field" class="table table-bordered table-striped small-padding">
+								<thead>
+									<tr>
+											<th>Group</th>
+											<th>Item</th>
+											<th>UOM</th>
+											<th>Stock Qty</th>
+											<th>Quantity</th>
+											<th>Rate</th>
+											<th>Amount</th>
+											<th>GST Amount</th>
+											<th>Total</th>
+									</tr>
+								</thead>
+								<tbody>
+											<?php foreach($this->salesdtl->get(array('sales'=>$sales['id'])) as $row):
+									$subgroup=$this->itemObj->getColumn($row['item'],'item_group');
+									?>	
+									<tr class="form-group removeclass1">
+										<input type="hidden" id="id" name="id[]" value="<?php echo $row['id'];?>">
+										<input type="hidden" class="form-control tr_gst_rate"  name="gst_rate[]" id="gst_rate">
+										<td>
+											<select  class="form-control tr_item_group" name="item_group" id="item_group" data-placeholder="Select">
+												<option value=""></option>
+												<?php foreach($itemgroups as $itemgroup):?>
+													<option value="<?php echo $itemgroup['id']; ?>" <?php echo ($subgroup==$itemgroup['id'])?'selected':'';?>>
+														<?php echo $itemgroup['item_group']; ?>
+													</option>
+												<?php endforeach; ?>
+											</select>
+										</td>
+										<td >
+											<select class="form-control tr_item" name="item[]" id="item" data-placeholder="Select" readonly>
+													<option value=""></option>
+													<?php foreach($item as $items):?>
+														<option value="<?php echo $items['id']; ?>" <?php echo ($row['item']==$items['id'])?'selected':'';?>>
+														<?php echo $items['name']; ?>
+													</option>
+														<?php endforeach;?>
+												</select> 
+										</td>
+										<td >
+											<input type="text" class="form-control tr_uom"  name="basic_uom[]" id="basic_uom" value="<?php echo $row['uom'];?> " readonly>
+										</td>
+										
+										<td >
+											<input type="text" class="form-control tr_stock_qty"  name="stock_qty[]" id="stock_qty" value="<?php echo $row['basic_quantity'];?> "readonly>
+										</td>
+										<td >
+											<input type="text" class="form-control tr_quantity"  name="quantity[]" id="quantity" value="<?php echo $row['quantity'];?> " >
+										</td>
+										<td >
+											<input type="text" class="form-control tr_rate"  name="rate[]" id="rate" value="<?php echo $row['rate'];?> "readonly>
+										</td>
+										<td >
+											<input type="text" class="form-control tr_amount"  name="amount[]" id="amount" value="<?php echo $row['amount'];?> " readonly >
+										</td>
+										<td >
+											<input type="text" class="form-control tr_gst_amt"  name="gst_amt[]" id="gst_amt" value="<?php echo $row['gst'];?> " readonly>
+										</td>
+										<td class="d-flex align-items-center">
+											<input type="text" class="form-control tr_total"  name="total[]" id="total" value="<?php echo $row['total'];?> " readonly>
+											&nbsp;<a class="btn btn-danger btn-xs " href="<?php echo $this->url('pos', array('action'=>'delete', 'id'=>$row['id']));?>">
+												<i class="fa fa-times"></i>
+											</a>	
+					
+										</td>
+									</tr>
+									<?php endforeach;?>
+								</tbody>
+							</table>
+
+							<div class="row">
+								<div class="col-lg-12 text-right">
+									<button class="btn btn-xs btn-success" type="button"  onclick="item_fields();">
+										<i class="fa fa-plus-square"></i> Add Row
+									</button>
+								</div>
+							</div>
+						</div>
+						</div>
+						<div class="row">
+							<div class="col-lg-2"></div>
+							<div class="col-lg-2">
+								<label class="control-label" for="tot_amount">Total Amount: </label>
+								<input class="form-control" name="tot_amount" id="tot_amount"  value="<?php echo $sales['total_amount'];?>" readonly>
+							</div>
+							<div class="col-lg-2">
+								<label class="control-label" for="discount_amt">Discount Amount: </label>
+								<input class="form-control" name="discount_amt" id="discount_amt"  value="<?php echo $sales['discount_amt'];?>" readonly>
+							</div>
+							<div class="col-lg-2">
+								<label class="control-label" for="net_amount">Net Amount: </label>
+								<input class="form-control" name="net_amount" id="net_amount"  value="<?php echo $sales['net_amount'];?>" readonly>
+							</div>
+							<div class="col-lg-2">
+								<label class="control-label" for="tot_gst">Total GST: </label>
+								<input class="form-control" name="tot_gst" id="tot_gst"  value="<?php echo $sales['tot_gst'];?>" readonly>
+							</div>
+							<div class="col-lg-2">
+								<label class="control-label" for="grand_tot">Grand Total: </label>
+								<input class="form-control" name="grand_tot" id="grand_tot"  value="<?php echo $sales['grand_tot'];?>" readonly>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-lg-12">
+								<label class="control-label" for="note">Note: </label>
+								<textarea class="form-control" name="note" id="note"><?php echo $sales['remarks'];?></textarea>
+							</div>
+						</div>
+						<div class="space-12"></div>
+						<div class="row">
+							<div class="col-lg-9">
+								<button type="submit" class="btn btn-success">
+									<i class="fa fa-check"></i> Save
+								</button>
+								<button type="button" class="btn btn-warning" onclick="javascript:history.back();" ><i class="fa fa-times"></i> Cancel </button>
+							</div>
+						</div>
+					</form>
+				</div><!-- widget-main -->
+			</div><!-- widget-body -->
+		</div><!-- widget-box -->
+	</div><!-- col-lg-12 -->
+</div><!-- row -->
+<script type="text/javascript">
+	var room = 1;
+	function item_fields() {
+  	  room++;
+  	  var newRow = `
+		<tr class="form-group removeclass${room}">
+		<input type="hidden" class="form-control tr_gst_rate"  name="gst_rate[]" id="gst_rate">
+			<td>
+				<select  class="form-control tr_item_group" name="item_group" id="item_group" data-placeholder="Select">
+					<option value=""></option>
+					<?php foreach($itemgroups as $itemgroup):?>
+						<option value="<?php echo $itemgroup['id']; ?>">
+							<?php echo $itemgroup['item_group']; ?>
+						</option>
+					<?php endforeach; ?>
+				</select>
+			</td>
+			<td >
+				<select class="form-control tr_item" name="item[]" id="item" data-placeholder="Select"  >
+					<option value=""></option>
+				</select> 
+			</td>
+			<td >
+			<input type="text" class="form-control tr_basic_uom"  name="basic_uom[]" id="basic_uom"  readonly>
+			</td>
+			</td>
+			<td >
+			<input type="text" class="form-control tr_stock_qty"  name="stock_qty[]" id="stock_qty" readonly>
+			</td>
+			<td >
+			<input type="text" class="form-control tr_quantity"  name="quantity[]" id="quantity" value="" >
+			</td>
+			<td >
+			<input type="text" class="form-control tr_rate"  name="rate[]" id="rate" value="" readonly>
+			</td>
+			<td >
+			<input type="text" class="form-control tr_amount"  name="amount[]" id="amount" value="" readonly >
+			</td>
+			<td >
+			<input type="text" class="form-control tr_gst_amt"  name="gst_amt[]" id="gst_amt" value="" readonly>
+			</td>
+			<td class="d-flex align-items-center">
+			<input type="text" class="form-control tr_total"  name="total[]" id="total" value="0.00" readonly>
+				<button type="button" class="btn btn-danger btn-xs remove_row" data-row="${room}" style="margin-left:5px;">
+					<i class="fa fa-times"></i>
+				</button>
+			</td>
+		</tr>`;
+    	$('#item_field tbody').append(newRow);
+		calculateTotalAmount()
+    	
+	}
+	$(document).on('click', '.remove_row', function () {
+		var rowId = $(this).data('row');
+		$('.removeclass' + rowId).remove();
+		calculateTotalAmount()
+				
+	});
+
+	$(document).ready(function() {
+		// Initialize select2 on all current "item" dropdowns
+		var relatedItemElement = $(this).closest('tr').find('.tr_item');
+		relatedItemElement.select2({
+			placeholder: "Select an item",
+			allowClear: true
+		});
+	});
+	// Use the document as the parent and delegate the event to the .tr_item_group class
+	$(document).on('change', '.tr_item_group', function() {
+			var selectedItemgroup = $(this).val(); // get the value of the changed .tr_item_group
+			var relatedItemElement = $(this).closest('tr').find('.tr_item'); // find the related .tr_item in the same row
+			
+			// Assuming you want to do an AJAX call similar to what you've shown in your initial code:
+			$.post(
+				"<?php echo $this->url('pos', array('action' => 'getItemChange')); ?>",
+				{
+					locationId: $("#location").val(),
+					item_group: selectedItemgroup,
+				},
+				function(data) {
+					relatedItemElement.html(data.items); // updating the related .tr_item
+					relatedItemElement.trigger('chosen:updated'); // if you're using chosen plugin
+					
+				},
+				'json'
+			);  
+		});
+	$(document).on('change', '.tr_item', function() {
+	
+		var selectedItem = $(this).val(); // get the value of the changed .tr_item_group
+			console.log(selectedItem);
+		var relatedgstrate = $(this).closest('tr').find('.tr_gst_rate'); // find the related .tr_gst_ratein the same row
+		var relatedrate = $(this).closest('tr').find('.tr_rate'); // find the related .tr_item in the same row
+		var relatedstockqty = $(this).closest('tr').find('.tr_stock_qty');
+		var relatedcp = $(this).closest('tr').find('.tr_cost_price');
+		// Assuming you want to do an AJAX call similar to what you've shown in your initial code:
+		$.post(
+			"<?php echo $this->url('pos', array('action' => 'getrate')); ?>",
+			{
+				location: $("#location").val(),
+				item :selectedItem,
+			},
+			function(data) {
+				console.log(data);
+				relatedrate.val(data.rate);
+				relatedstockqty.val(data.quantity);	
+				relatedcp.val(data.cost_price);	
+				relatedgstrate.val(data.gst_rate);
+				
+			},
+			'json'
+		);  
+	});
+	
+	$(document).on('change', '.tr_item', function() {
+		var selectedItem = $(this).val(); // get the value of the changed .tr_item_group
+		var relatedItemElement = $(this).closest('tr').find('.tr_basic_uom'); // find the related .tr_item in the same row
+		
+		// Assuming you want to do an AJAX call similar to what you've shown in your initial code:
+		$.post(
+			"<?php echo $this->url('pos', array('action' => 'getuom')); ?>",
+			{
+				itemId: selectedItem,
+			},
+			function(data) {
+				relatedItemElement.val(data.uom); // updating the related .tr_item
+				
+			},
+			'json'
+		);  
+	});
+	$(document).on('input', '.tr_rate, .tr_quantity', function() {
+		calculateTotal($(this));
+	});
+	$(document).on('input', '.tr_amount,.tr_quantity', function () {
+		calculateTotalAmount();
+		calculateTotalNet();
+		});
+	function calculateTotal(element) {
+		var row = element.closest('tr');  // Get the closest table row
+
+		var rateInput = row.find('.tr_rate');  // Adjusted these to use class selectors and scope within the row
+		var quantityInput = row.find('.tr_quantity');
+		var amountInput = row.find('.tr_amount'); // Assuming there's a field for the total amount with the class "tr_amount"
+		var totalInput = row.find('.tr_total');
+		var gstrateInput = row.find('.tr_gst_rate');
+		var gstamtInput = row.find('.tr_gst_amt');
+
+		var rate = parseFloat(rateInput.val()) || 0;
+		var quantity = parseFloat(quantityInput.val()) || 0;
+		var gstrate = parseFloat(gstrateInput.val()) || 0;
+		var amount = rate * quantity;
+		var gstamt=(amount*gstrate)/100;
+		var total=amount+gstamt;
+
+		  // Assuming you want to show up to two decimal places
+		amountInput.val(amount.toFixed(2)); 
+		gstamtInput.val(gstamt.toFixed(2));
+		totalInput.val(total.toFixed(2));
+		calculateTotalAmount();
+		calculateTotalNet();
+	}
+	function calculateTotalAmount() {
+		console.log("calculateTotal amount");
+		var total = 0.0;
+		var grand = 0.0;
+		var gst = 0.0;
+		var discount = 0.0;
+		var net=0;
+		var discount_per = parseFloat($('#discount').val()) || 0;
+		// Iterate over each amount input field in the table
+		$('.tr_amount').each(function() {
+			var amount = parseFloat($(this).val());
+			if (!isNaN(amount)) { // Make sure it's a valid number
+				total += amount;
+			}
+		});
+		// Update the #total field with the new sum
+		
+		$('#tot_amount').val(total.toFixed(2));
+		discount=total*(discount_per/100);
+		net=total-discount;
+		$('#discount_amt').val(discount.toFixed(2));
+		$('#net_amount').val(net.toFixed(2));
+
+		$('.tr_gst_amt').each(function() {
+			var amount = parseFloat($(this).val());
+			if (!isNaN(amount)) { // Make sure it's a valid number
+				var dis=amount*(discount_per/100);
+				gst += amount-dis;
+			}
+		});
+		// Update the #total field with the new sum
+		$('#tot_gst').val(gst.toFixed(2));
+
+		$('.tr_total').each(function() {
+			var amount = parseFloat($(this).val());
+			if (!isNaN(amount)) { // Make sure it's a valid number
+			var dis=amount*(discount_per/100);
+				grand += amount-dis;
+			}
+		});
+		// Update the #total field with the new sum
+		$('#grand_tot').val(grand.toFixed(2));
+	}		
+	/*function calculateTotalNet() {
+		var total = 0.0;
+		var discount=$('#discount').val();
+		// Iterate over each amount input field in the table
+		$('.tr_amount').each(function() {
+			var amount = parseFloat($(this).val());
+			if(discount!=0 && !isNaN(amount)){
+				total += amount-(amount*(discount/100));
+			}
+			else if (!isNaN(amount)) { // Make sure it's a valid number
+				total += amount;
+			}
+		});
+		// Update the #total field with the new sum
+		$('#net_amount').val(total.toFixed(2));
+	}	*/
+	$(document).on('input', '.tr_quantity', function() {
+		// Fetch the entered quantity from the changed input
+		var enteredQuantity = parseFloat($(this).val()) || 0;
+		
+		// Find the related stock quantity in the same row
+		var stockQtyElement = $(this).closest('tr').find('.tr_stock_qty');
+		var stockQty = parseFloat(stockQtyElement.val()) || 0;
+
+		// Check if entered quantity exceeds stock quantity
+		if (stockQty-enteredQuantity<0 ) {
+			alert('Entered quantity exceeds available stock!');
+			$(this).val(stockQty); // Reset to max available quantity (optional)
+			// You might also want to add visual cues, like changing the background color
+			$(this).css('background-color', '#FFCCCC');
+		} else {
+			$(this).css('background-color', ''); // Reset background color
+		}
+
+		calculateTotal($(this)); 
+	});
+	
+$(document).ready(function (){
+  $('input[type=radio][name=credit]').change(function(){
+        if ($(this).val() == "y") {
+			$('#due_dates').show();
+			$('#customers').show();
+			$('#payment').hide();
+			$('#account').hide();
+			$('#ref_no').show();
+        } 
+		else if($(this).val() == "1"){
+			$('#due_dates').hide();
+			 $('#customers').show();
+			 $('#payment').hide();
+			$('#account').hide();
+			  $('#ref_no').hide();
+			
+		}else {
+            $('#due_dates').hide();
+			$('#customers').hide();
+			$('#payment').show();
+			$('#account').show();
+			 $('#ref_no').hide();
+        } 
+			$.post(
+			"<?php echo $this->url('pos', array('action' => 'getcustomer')); ?>",
+			{
+				id: $(this).val(),
+			},
+			function(data){
+				console.log(data);
+				$("#customer").html(data.customer);	
+				$("#customer").trigger('chosen:updated');
+			},
+			'json'
+		);	
+    });
+    $('#due_date').datepicker();
+	$('#sales_date').datepicker();
+	
+	$('#payment_type,#location').on('change', function(){
+		$.post(
+			"<?php echo $this->url('pos', array('action' => 'getBCAccount')); ?>",
+			{
+				paymentId: $('#payment_type').val(),
+				locationId: $('#location').val(),
+			},
+			function(data){
+				console.log(data);
+				$("#account_no").html(data.account);	
+				$("#account_no").trigger('chosen:updated');
+			},
+			'json'
+		);	
+		if($('#payment_type').val()==2){
+			$('#journel').show();
+			$('#mobile').show();
+
+		}
+		else{
+			$('#journel').hide();
+			$('#mobile').hide();
+		}
+	});
+	$('#discount').on('change', function(){
+		calculateTotalAmount() ;
+		
+	});
+	$('form input, form select').on('keydown', function (e) {
+        // Check for the Enter key
+        if (e.which === 13) {
+            e.preventDefault(); // Prevent form submission
+
+            // Get all input elements in form
+            var inputs = $(this).closest('form').find(':input:visible:not([disabled])');
+
+            // Find the next input element
+            var nextInput = inputs.eq(inputs.index(this) + 1);
+            
+            if (nextInput.length) {
+                nextInput.focus();
+            } else {
+                // If there's no next input, you might want to trigger form submission
+                // $(this).closest('form').submit(); 
+            }
+        }
+    });
+	const fv = FormValidation.formValidation(document.getElementById('itemForm'), {
+		fields: {
+			'payment_type': {
+				validators: {
+					notEmpty: {
+						message: 'Please select Payment Type.'
+					}
+				}
+			},
+			'account_no': {
+                validators: {
+                    callback: {
+					message: 'Select the account no',
+					callback: function(input) {
+					  return input.value !== '-1';
+					},
+				  },
+                }
+            },
+			'location': {
+				validators: {
+					notEmpty: {
+						message: 'Please select location.'
+					}
+				}
+			},
+			'stock_qty[]': {
+                    validators: {
+                        callback: {
+                            message: 'Not enough stock',
+                            callback: function(input) {
+                                return parseFloat(input.value) >= 0;
+                            },
+                        },
+                    }
+                },
+				'quantity[]': {
+                    validators: {
+                        callback: {
+                            message: 'Quantity Cannot Be Negative',
+                            callback: function(input) {
+                                return parseFloat(input.value) >= 0;
+                            },
+                        },
+                    }
+                },
+			'customer': {
+                validators: {
+                    callback: {
+					message: 'Select the Customer',
+					callback: function(input) {
+					  return input.value !== '-1';
+					},
+				  },
+                }
+            },
+			'sales_person': {
+				validators: {
+					notEmpty: {
+						message: 'Please select Sales Person.'
+					}
+				}
+			},
+		},
+		plugins: {
+			trigger: new FormValidation.plugins.Trigger(),
+			bootstrap3: new FormValidation.plugins.Bootstrap3(),
+			submitButton: new FormValidation.plugins.SubmitButton(),
+			defaultSubmit: new FormValidation.plugins.DefaultSubmit(),
+		},
+	}).on('core.element.validated', function (e) {
+		if (e.valid) {
+			$('div#'+ e.field.replace('[]','') +'_chosen').removeClass('is-invalid');
+			$('div#'+ e.field.replace('[]','') +'_chosen').addClass('is-valid');
+		} else {
+			$('div#'+ e.field.replace('[]','') +'_chosen').removeClass('is-valid');
+			$('div#'+ e.field.replace('[]','') +'_chosen').addClass('is-invalid');
+		}
+	});
+});
+</script>

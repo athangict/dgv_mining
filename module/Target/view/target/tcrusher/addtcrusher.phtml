@@ -1,0 +1,130 @@
+
+<?php
+/**
+ * 
+ * View -- of Accounts/ChartaccountController/addclassAction
+ * 
+ */
+//$this->headTitle($this->title);
+?>
+<form  id="form" method="post" action="<?php echo $this->url('tcrusher', array('action' => 'addtcrusher')); ?>"  enctype="multipart/form-data" >
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title"> <i class="fa fa-asterisk"></i>Quarry Target Setting</h4>
+    </div>  <!-- /modal-header -->
+	<input type="hidden" name="target_id" id="target_id">
+    <div class="modal-body">
+		<div class="row">
+		<div class="col-lg-12">
+			    <div class="form-group">
+                <label for="year" class="control-label">Year</label>
+                    <select class="form-control" name="year" id="year" required>
+                        <?php
+                        $currentYear = date('Y');
+                        $nextYear = $currentYear + 1;
+                        $startYear = 2024;
+                        $selectedYear = $target['year'] ?? $currentYear;
+                        for ($y = $nextYear; $y >= $startYear; $y--) {
+                            $selected = ($y == $selectedYear) ? 'selected' : '';
+                            echo "<option value=\"$y\" $selected>$y</option>";
+                        }
+                        ?>
+                    </select>
+            </div>
+		</div>
+
+
+			<div class="col-lg-12">
+				<div class="form-group">
+					<label for="item" class="control-label">Item</label>
+					<select class="form-control" name="item" id="item" data-placeholder="Select" required>
+						<option value="" disabled selected>Select</option>
+						<?php
+							$allowed_ids = [1, 2, 3, 4, 5, 9]; 
+							foreach($item as $items):
+								if (in_array($items['id'], $allowed_ids)): ?>
+									<option value="<?php echo $items['id']; ?>">
+										<?php echo $items['name']; ?>
+									</option>
+								<?php endif;
+							endforeach;
+						?>	
+					</select>		
+				</div>
+			</div>
+
+			<div class="form-group col-lg-12">
+				<label for="period" class="control-label">Period</label>
+				<select class="form-control" id="period" name="period" data-placeholder="Select" required>
+					<option value="" disabled selected>Select</option>
+					<?php foreach ($periods as $period): ?>
+							<option value="<?php echo $period['id']; ?>">
+								<?php echo $period['period']; ?>
+							</option>
+					<?php endforeach; ?>
+				</select>
+			</div>
+			<div class="col-lg-12">
+                <div class="form-group">
+                    <label for="target" class="control-label">Target</label>
+                    <input class="form-control" name="target" id="target" type="text" placeholder="Enter target">
+                </div>
+            </div>
+			</div>
+		</div>
+    </div>
+    <div class="modal-footer">
+        <button type="submit" class="btn btn-success"><i class="fa fa-check"></i> Save </button>
+        <button type="button" class="btn btn-warning" data-dismiss="modal"><i class="fa fa-times"></i> Cancel </button>
+    </div>  
+</form>
+<script>
+$(function () {
+    $('#yearpicker').datepicker({
+        format: "yyyy",
+        viewMode: "years",
+        minViewMode: "years",
+        autoclose: true
+    });
+});
+ $('#date').datepicker();
+$(function(){
+	
+	const fv = FormValidation.formValidation(document.getElementById('#form'), {
+		fields: {
+			code: {
+				validators: {
+					notEmpty: {
+						message: 'Please select Code.'
+					}
+				}
+			},
+			name: {
+				validators: {
+					notEmpty: {
+						message: 'Please provide  Name.'
+					}
+				}
+			},
+			
+		},
+		plugins: {
+			trigger: new FormValidation.plugins.Trigger(),
+			bootstrap3: new FormValidation.plugins.Bootstrap3(),
+			submitButton: new FormValidation.plugins.SubmitButton(),
+			defaultSubmit: new FormValidation.plugins.DefaultSubmit(),
+		},
+	}).on('core.element.validated', function (e) {
+		if (e.valid) {
+			$('div#'+ e.field.replace('[]','') +'_chosen').removeClass('is-invalid');
+			$('div#'+ e.field.replace('[]','') +'_chosen').addClass('is-valid');
+		} else {
+			$('div#'+ e.field.replace('[]','') +'_chosen').removeClass('is-valid');
+			$('div#'+ e.field.replace('[]','') +'_chosen').addClass('is-invalid');
+		}
+	});
+	$('form select').chosen().change(function () {
+		fv.revalidateField($(this).attr('name'));
+	});
+});
+</script>

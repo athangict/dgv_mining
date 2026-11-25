@@ -1,0 +1,112 @@
+<?php 
+/**
+ * View -- of Assessment/AssessmentController/addassessmentAction
+ */
+$this->headTitle($this->title);
+?>
+
+<form id="form" method="post" action="<?php echo $this->url('q', array('action' => 'addattendance')); ?>" enctype="multipart/form-data">                  
+    <div class="modal-header">
+        <h4 class="modal-title"><i class="icon ti ti-edit"></i> Status at the field</h4>
+    </div>
+    <div class="modal-body">
+        <input type="hidden" name="application_id" id="application_id" value="<?php echo $application_id;?>" /> 
+        <div class="row">
+            <!-- <div class="mb-3 col-lg-6">
+                <label class="form-label" for="attendance_employee">Employee</label>
+                <select id="attendance_employee" name="attendance_employee" class="form-control" data-placeholder="Select" required>
+                    <option value="" disabled selected>Select</option>
+                    
+                    <?php foreach ($bemployees as $blaster):
+                        ?>
+                        <option value="<?php echo ($blaster['blasters']); ?>">
+                        <?php// echo $this->emptObj->getColumn($blaster['blasters'], 'full_name'); ?>
+                        </option>
+                    <?php endforeach;
+                   ?>
+                    <?php foreach ($employees as $attendance_employee): ?>
+                        <option value="<?php //echo ($attendance_employee['driver_name']); ?>">
+                        <?php //echo $this->emptObj->getColumn($attendance_employee['driver_name'], 'full_name'); ?>
+                        </option>
+                    <?php endforeach; ?>						
+                </select>  
+            </div> -->
+
+  <div class="mb-3 col-lg-6">
+            <label class="form-label" for="attendance_employee">Employee</label>
+            <select id="attendance_employee" name="attendance_employee" class="form-control" data-placeholder="Select" required>
+                <option value="" disabled selected>Select</option>
+                <?php foreach ($emp as $blaster): ?>
+                    <option value="<?php echo ($blaster['id']); ?>" <?php echo (isset($selected_blaster) && $selected_blaster == $blaster['id']) ? 'selected' : ''; ?>>
+                        <?php echo ($blaster['full_name']); ?>
+                    </option>
+                <?php endforeach; ?>
+            </select> 
+        </div>
+            
+            <div class="mb-3 col-lg-6">
+                <label class="form-label" for="attendance_status">Status</label>
+                <select id="attendance_status" name="attendance_status" class="form-control" data-placeholder="Select" required>
+                    <option value="" disabled selected>Select</option>
+                    <option value="2">Present</option>
+                    <option value="1">Absent</option>
+                </select> 
+            </div>
+        
+            <div id="absent-details" style="display: none;">
+                <div class="mb-3 col-lg-6">
+                    <label class="form-label" for="remarks">Reason for Absence</label>
+                    <textarea id="remarks" name="remarks" class="form-control" rows="3" placeholder="Enter the reason for absence"></textarea>
+                </div>
+
+                <div class="mb-3 col-lg-6">
+                    <label class="form-label" for="replacement_employee">Replacement Employee</label>
+                    <select id="replacement_employee" name="replacement_employee" class="form-control" data-placeholder="Select">
+                        <option value="" disabled selected>Select Replacement</option>
+                        <?php foreach ($emp as $attendance_employee): ?>
+                            <option value="<?php echo ($attendance_employee['id']); ?>">
+                                <?php echo ($attendance_employee['full_name']); ?>
+                            </option>
+                        <?php endforeach; ?>											
+                    </select> 
+                </div>
+            </div>
+            
+            <div class="mb-3 col-lg-6"> 
+                <div class="form-group">
+                    <label for="time" class="control-label">Work Start Time</label>
+                    <input type="time" class="form-control" name="time" id="time"  required> 
+                </div> 
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button type="submit" class="btn btn-success"><i class="fa fa-check"></i> Save </button>
+        <button type="button" class="btn btn-warning" data-dismiss="modal" ><i class="fa fa-times"></i> Cancel </button> 
+    </div>
+</form>
+
+<script type="text/javascript">
+// if absent  this feilds are shown 
+$(document).ready(function() {
+
+    $('#attendance_status').on('change', function() {
+        var status = $(this).val();
+        
+   
+        if (status === '1') {
+            $('#absent-details').show();
+        } else {
+            $('#absent-details').hide();
+        }
+    });
+
+   
+    if ($('#attendance_status').val() === '1') {
+        $('#absent-details').show();
+    } else {
+        $('#absent-details').hide();
+    }
+});
+</script>

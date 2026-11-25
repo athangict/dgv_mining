@@ -1,0 +1,198 @@
+<br/>
+<style>
+    .stepper-card {
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .stepper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        margin: 20px 0;
+    }
+
+    .stepper-list {
+        display: flex;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        width: 100%;
+        max-width: 1200px;
+    }
+
+    .stepper-list li {
+        position: relative;
+        flex: 1;
+        text-align: center;
+    }
+
+    .stepper-list li::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        left: 0;
+        width: 100%;
+        height: 3px;
+        margin-top: -7px;
+        background-color: #ccc;
+        z-index: 0;
+    }
+
+    .stepper-list li:first-child::before {
+        left: 50%;
+    }
+
+    .stepper-list li:last-child::before {
+        width: 50%;
+    }
+
+    .stepper-list li .stepNumber {
+        position: relative;
+        z-index: 1;
+        background-color: #fff;
+        border: 2px solid #007bff;
+        border-radius: 50%;
+        display: inline-block;
+        width: 40px;
+        height: 40px;
+        line-height: 36px;
+        text-align: center;
+        font-weight: bold;
+        color: #007bff;
+        transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+    }
+
+    .stepper-list li.done .stepNumber,
+    .stepper-list li.selected .stepNumber {
+        background-color: #007bff;
+        color: #fff;
+    }
+
+    .stepper-list li.done::before,
+    .stepper-list li.selected::before {
+        background-color: #007bff;
+    }
+
+    .stepper-list li.disabled .stepNumber {
+        border-color: #ccc;
+        color: #ccc;
+    }
+
+    .stepper-list li.disabled::before {
+        background-color: #ccc;
+    }
+
+    .stepper-list li .stepDesc {
+        margin-top: 5px;
+        display: block;
+    }
+
+    .stepper-list li .stepDesc small {
+        font-size: 12px;
+        color: #666;
+        display: block;
+        margin-top: 5px;
+    }
+
+    .stepper-list li a {
+        text-decoration: none;
+    }
+
+    .stepper-list li a:hover .stepNumber {
+        background-color: #0056b3;
+        color: #fff;
+        border-color: #0056b3;
+    }
+
+    .stepper-list li a:hover .stepDesc small {
+        color: #0056b3;
+    }
+
+    .stepper-list li:not(.selected):not(:hover) .stepNumber {
+        background-color: #fff;
+        border: 2px solid #007bff;
+        color: #007bff;
+    }
+
+    .stepper-list li.selected .stepNumber,
+    .stepper-list li.selected a:hover .stepNumber {
+        background-color: #0056b3;
+        color: #fff;
+        border-color: #0056b3;
+    }
+
+    
+	@media (max-width: 768px) {
+    .stepper::before {
+        width: 0;
+    }
+    .stepper-list {
+        margin-bottom: 20px;
+    }
+    .stepper-list::after {
+        display: none;
+    }
+    .stepNumber {
+        width: 30px;
+        height: 30px;
+        line-height: 28px;
+    }
+    .stepDesc {
+        font-size: 12px;
+    }
+}
+</style>
+<?php
+$stepLabels = [
+    1 => 'Assignment',
+    2 => 'Attachments & Attendance',
+    3 => 'Trips',
+    4 => 'Overview'
+];
+
+$steps = [];
+for ($i = 1; $i <= 4; $i++) {
+    if ($i < $this->step) {
+        $class = 'done';
+        $number = '✔';
+    } elseif ($i == $this->step) {
+        $class = ($this->step == $this->maxstep) ? 'selected' : 'wait selected';
+        $number = $i;
+    } elseif ($i <= $this->maxstep) {
+        $class = 'wait done';
+        $number = $i;
+    } else {
+        $class = 'disabled';
+        $number = $i;
+    }
+
+    $steps[] = [
+        'class' => $class,
+        'number' => $number,
+        'label' => $stepLabels[$i],
+        'url' => ($class == 'disabled') ? '#' : $this->url('q', ['action' => 'step' . $i, 'id' => $this->id])
+    ];
+}
+?>
+
+<!-- start: WIZARD STEPS -->
+<div class="stepper-card">
+    <div class="stepper">
+        <ul class="stepper-list">
+            <?php foreach ($steps as $step): ?>
+                <li class="<?php echo $step['class']; ?>">
+                    <a href="<?php echo $step['url']; ?>">
+                        <div class="stepNumber"><?php echo $step['number']; ?></div>
+                        <span class="stepDesc"><small><?php echo $step['label']; ?></small></span>
+                    </a>
+                </li>
+            <?php endforeach; ?>
+        </ul>
+    </div>
+</div>

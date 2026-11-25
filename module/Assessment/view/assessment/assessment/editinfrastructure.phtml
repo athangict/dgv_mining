@@ -1,0 +1,145 @@
+<?php 
+/**
+ * View -- of Assessment/AssessmentController/editassessmentAction
+ */
+$this->headTitle($this->title);
+
+//echo'<pre>';print_r($infrastructuredetails);exit;
+?>
+<?php foreach($infrastructuredetails as $infa):
+    endforeach;?>
+<?php foreach($infa as $row):
+    endforeach;?>
+
+<form id="form" method="post" action="<?php echo $this->url('q', array('action' => 'editinfrastructure')); ?>" enctype="multipart/form-data">                  
+    <div class="modal-header">
+        <h4 class="modal-title"><i class="icon ti ti-edit"></i> Edit Assessment</h4>
+    </div>
+    
+    <div class="modal-body">
+   <input type="hidden" name="application_id" id="application_id" value="<?php echo $application_id;?>" /> 
+    <input type="hidden" id="infa_id" name="infa_id" value="<?php echo $id;?>" />
+
+        <div class="row">
+            <div class="mb-3 col-lg-6">
+                <label class="form-label" for="driver_name">Operator</label>
+                <select id="driver_name" name="driver_name" class="form-control" data-placeholder="Select" required>
+                    <option value="" disabled>Select</option>
+                    <?php 
+                   
+                        foreach ($employees as $emp): 
+                            if ($emp['designation'] === 'OPERATOR'): ?>
+                                <option value="<?php echo ($emp['id']); ?>" 
+                                    <?php echo ($emp['id'] == $infa['driver_name']) ? 'selected' : ''; ?>>
+                                    <?php echo ($emp['full_name']); ?>
+                                </option>
+                            <?php 
+                            endif;
+                        endforeach;
+                        ?>
+                </select>
+            </div>
+                <div class="mb-3 col-lg-6">
+                    <label class="form-label" for="excavator">Excavator</label>
+                    <select id="excavator" name="excavator" class="form-control" data-placeholder="Select" required>
+                        <option value="" disabled>Select</option>
+                        <?php 
+                            foreach ($asset as $excavator): ?>
+                                <option value="<?php echo ($excavator['id']); ?>" 
+                                    <?php echo ($excavator['name'] === $infa['excavator']) ? 'selected' : ''; ?>>
+                                    <?php echo ($excavator['name']); ?>
+                                </option>
+                            <?php endforeach;?> 
+                    </select>
+                </div>
+        </div>
+
+        <div class="row">
+            <div class="mb-3 col-lg-6">
+                <label class="form-label" for="start_meter">Start Meter</label>
+                <input class="form-control" type="number" name="start_meter" id="start_meter"value="<?php echo $infa['start_meter'];?>" />
+            </div>
+              <div class="mb-3 col-lg-6">
+                <label class="form-label" for="hsd_issued">HSD Issued</label>
+                <input class="form-control" type="text" name="hsd_issued" id="hsd_issued" value="<?php echo $infa['hsd_issued'];?>" />
+            </div>
+       </div>
+
+    </div>
+
+    <div class="modal-footer">
+        <button type="submit" class="btn btn-success"><i class="fa fa-check"></i> Save </button>
+        <button type="button" class="btn btn-warning" data-dismiss="modal" ><i class="fa fa-times"></i> Cancel </button> 
+    </div>
+</form>
+
+<script type="text/javascript">
+$(function() {
+    const fv = FormValidation.formValidation(document.getElementById('form'), {
+        fields: {
+            vehicle_type: {
+                validators: {
+                    notEmpty: {
+                        message: 'Please select a vehicle type.'
+                    }
+                }
+            },v
+            operator: {
+                validators: {
+                    notEmpty: {
+                        message: 'Please enter the operator name.'
+                    }
+                }
+            },
+            start_meter: {
+                validators: {
+                    notEmpty: {
+                        message: 'Please enter the start meter.'
+                    },
+                    numeric: {
+                        message: 'Start meter must be a number.'
+                    }
+                }
+            },
+            end_meter: {
+                validators: {
+                    notEmpty: {
+                        message: 'Please enter the end meter.'
+                    },
+                    numeric: {
+                        message: 'End meter must be a number.'
+                    }
+                }
+            },
+            hsd_issued: {
+                validators: {
+                    notEmpty: {
+                        message: 'Please enter the HSD issued.'
+                    },
+                    numeric: {
+                        message: 'HSD issued must be a number.'
+                    }
+                }
+            },
+            overtime: {
+                validators: {
+                    notEmpty: {
+                        message: 'Please enter the overtime.'
+                    },
+                    numeric: {
+                        message: 'Overtime must be a number.'
+                    }
+                }
+            }
+        },
+        plugins: {
+            trigger: new FormValidation.plugins.Trigger(),
+            bootstrap5: new FormValidation.plugins.Bootstrap5({
+                rowSelector: '.mb-3',
+            }),
+            submitButton: new FormValidation.plugins.SubmitButton(),
+            defaultSubmit: new FormValidation.plugins.DefaultSubmit(),
+        },
+    });
+});
+</script>

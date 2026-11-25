@@ -1,0 +1,143 @@
+<?php
+/**
+ * View -- of Application/IndexController/panel2Action
+ * Updated for Quarterly View Support
+ */
+$this->headTitle($title);
+?>
+<?php echo $this->tabs_helper(array(6)); ?>
+
+<div class="page-header">
+    <div class="row">
+        <div class="col-lg-6">
+            <h1>Dashboard</h1>
+        </div>
+    </div>
+</div>
+
+<div class ="row">
+    <form id="#form" method="post" action="<?php echo $this->url('application',array('action'=>'panel3')); ?>"  enctype="multipart/form-data" >
+        <div class="col-lg-2">
+            <label for="period" class="control-label"><b>Period</b> </label>
+            <select name="period" id="period" class="form-control" onchange='this.form.submit()'>
+                <option value=""></option>
+                <?php foreach($period as $periods):?>
+                    <option value="<?php echo $periods['id'];?>" <?php echo ($period_id==$periods['id'])?'selected':'';?>>
+                        <?php echo $periods['period']; ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+    </form>
+</div>
+
+<br>
+<div class="page-body">
+    <div class="container-xl">
+        <div class="row row-deck row-cards">
+            <div class="col-lg-8">
+<?php
+$Total_target = [];
+$Total_actual = [];
+$year = date('Y');
+
+if ($period_id == 1) {
+    $monthly_target = $this->targetObj->getColumn(['year' => $year], 'target', );
+    foreach ($item as $m) {
+        if (isset($m['item'], $m['id'])) {
+            $Total_target[] = ["label" => $m['item'], "y" => $monthly_target];
+            $actual = $this->groupObj->getActualTotalByMonth($year, 1, 'product_qty',);
+            $Total_actual[] = ["label" => $m['item'], "y" => $actual];
+        }
+    }
+} elseif ($period_id == 2) {
+    $monthly_target = $this->targetObj->getColumn(['year' => $year], 'target');
+    foreach ($item as $m) {
+        if (isset($m['item'], $m['id'])) {
+            $Total_target[] = ["label" => $m['item'], "y" => $monthly_target];
+            $actual = $this->groupObj->getActualTotalByMonth($year, 2, 'product_qty ', );
+            $Total_actual[] = ["label" => $m['item'], "y" => $actual];
+        }
+    }
+} elseif ($period_id == 3) {
+    $monthly_target = $this->targetObj->getColumn(['year' => $year], 'target');
+    foreach ($item as $m) {
+        if (isset($m['item'], $m['id'])) {
+            $Total_target[] = ["label" => $m['item'], "y" => $monthly_target];
+            $actual = $this->groupObj->getActualTotalByMonth($year, 3, 'product_qty',);
+            $Total_actual[] = ["label" => $m['item'], "y" => $actual];
+        }
+    }
+} elseif ($period_id == 4) {
+    $monthly_target = $this->targetObj->getColumn(['year' => $year], 'target');
+    foreach ($item as $m) {
+        if (isset($m['item'], $m['id'])) {
+            $Total_target[] = ["label" => $m['item'], "y" => $monthly_target];
+            $actual = $this->groupObj->getActualTotalByMonth($year, 4, 'product_qty',);
+            $Total_actual[] = ["label" => $m['item'], "y" => $actual];
+        }
+    }
+}
+elseif ($period_id == 5) {
+    $monthly_target = $this->targetObj->getColumn(['year' => $year], 'target');
+    foreach ($item as $m) {
+        if (isset($m['item'], $m['id'])) {
+            $Total_target[] = ["label" => $m['item'], "y" => $monthly_target];
+            $actual = $this->groupObj->getActualTotalByMonth($year, 5, 'product_qty',);
+            $Total_actual[] = ["label" => $m['item'], "y" => $actual];
+        }
+    }
+}
+?>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-10">
+        <div class="card">
+            <div class="card-body">
+                <h3 class="card-title text-center">Target vs Actual</h3>
+                <div id="chart1" class="canvas-chart" style="height: 400px;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+$(function () {
+    var chart1 = new CanvasJS.Chart("chart1", {
+        animationEnabled: true,
+        exportFileName: "TotalMT",
+        exportEnabled: true,
+        axisX: {
+            title: "Period",
+            interval: 1
+        },
+        axisY: {
+            title: "No. of MT"
+        },
+        theme: "light",
+        data: [
+            {
+                type: "column",
+                toolTipContent: "Target MT: {y}",
+                legendText: "Target MT",
+                showInLegend: true,
+                indexLabelPlacement: "outside",
+                dataPoints: <?php echo json_encode($Total_target, JSON_NUMERIC_CHECK); ?>
+            },
+            {
+                type: "column",
+                toolTipContent: "Actual MT: {y}",
+                legendText: "Actual MT",
+                showInLegend: true,
+                indexLabelPlacement: "outside",
+                dataPoints: <?php echo json_encode($Total_actual, JSON_NUMERIC_CHECK); ?>
+            }
+        ]
+    });
+    chart1.render();
+});
+</script>

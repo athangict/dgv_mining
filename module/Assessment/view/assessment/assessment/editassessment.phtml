@@ -1,0 +1,95 @@
+<?php 
+/**
+ * View -- of Assessment/AssessmentController/editassessmentAction
+ */
+$this->headTitle($this->title);
+$date = isset($date) && !empty($date) ? $date : date('Y-m-d'); 
+?>
+<?php foreach ($assessmentdetails as $row):
+    // echo '<pre>'; print_r($assessmentdetails); exit;
+endforeach; ?>
+
+<form id="form" method="post" action="<?php echo $this->url('q', array('action' => 'editassessment')); ?>" enctype="multipart/form-data">                  
+    <div class="modal-header">
+        <h4 class="modal-title"><i class="icon ti ti-edit"></i>Edit Work Category</h4>
+    </div>
+
+    <div class="modal-body">
+        <input type="hidden" name="application_id" id="application_id" value="<?php echo $application_id; ?>">
+
+        <div class="row">
+        <div class="mb-3 col-lg-6 col-md-6">
+            <label class="form-label" for="categoryy">Category</label>
+            <select id="categoryy" name="categoryy" class="form-control" data-placeholder="Select" required>
+                <option value=""></option>  
+                <?php foreach ($categories as $category): ?>
+                    <option value="<?php echo $category['id'];?>" <?php echo ($category['id'] == $row['category']) ? 'selected' : ''; ?>>
+                        <?php echo $category['category']; ?>
+                    </option>
+                <?php endforeach; ?>                                 
+            </select> 
+        </div>
+
+        <div class="mb-3 col-lg-6 col-md-6">
+            <label for="date" class="control-label">Date</label>
+            <div class="date input-group" id="date" data-date-format="yyyy-mm-dd">
+                <input class="form-control" name="date" id="date" type="date" value="<?php echo $date; ?>" placeholder="date">
+            </div>
+        </div>  
+    </div>    
+
+    <div class="modal-footer">
+        <button type="submit" class="btn btn-success">
+            <i class="fa fa-check"></i> Save 
+        </button>
+        <button type="button" class="btn btn-warning" data-dismiss="modal">
+            <i class="fa fa-times"></i> Cancel 
+        </button> 
+    </div>
+</form>
+<style>
+    .modal-body .row .col-lg-6 {
+    margin-bottom: 15px;
+}
+</style>
+<script type="text/javascript">
+$(document).ready(function() {
+    const fv = FormValidation.formValidation(document.getElementById('form'), {
+        fields: {
+            date: {
+                validators: {
+                    notEmpty: {
+                        message: 'Please select a date.'
+                    },
+                }
+            },
+            categoryy: {
+                validators: {
+                    notEmpty: {
+                        message: 'Please select a category.'
+                    },
+                }
+            },
+        },
+        plugins: {
+            trigger: new FormValidation.plugins.Trigger(),
+            bootstrap5: new FormValidation.plugins.Bootstrap5({
+                rowSelector: '.mb-3',
+            }),
+            submitButton: new FormValidation.plugins.SubmitButton(),
+            defaultSubmit: new FormValidation.plugins.DefaultSubmit(),
+        },
+    }).on('core.element.validated', function (e) {
+        if (e.valid) {
+            $('div#' + e.field.replace('[]','') + '_chosen').removeClass('is-invalid');
+            $('div#' + e.field.replace('[]','') + '_chosen').addClass('is-valid');
+        } else {
+            $('div#' + e.field.replace('[]','') + '_chosen').removeClass('is-valid');
+            $('div#' + e.field.replace('[]','') + '_chosen').addClass('is-invalid');
+        }
+    });
+    $('form select').chosen().change(function () {
+        fv.revalidateField($(this).attr('name'));
+    });
+});
+</script>

@@ -1,0 +1,74 @@
+<?php
+/**
+ * View -- of Administration/MasterController/block
+ * chophel@athang.com
+ */
+	$this->headTitle($this->title);
+
+?>
+<?php echo $this->tabs_helper(array(3027,3050,3030,3201,3202)); ?>
+<div class="card">
+		<div class="card-header">
+		<div class="row">
+			<div class="col-lg-9">
+				<form method="POST">
+					<div class="row">
+               
+					</div>
+				</form>
+			</div>
+			<div class="col-lg-3 ">
+				<div class="space"></div>
+				<div class="btn-group pull-right">
+					<?php echo $this->button(2,$page);?>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="table-responsive">
+		<table class="table card-table text-nowrap" id="dataTables">
+			<thead>
+				<tr>
+					<th>#</th>
+					<th>Work Category</th>
+
+					<!--<th>Status</th>--!>
+					<?php if($this->button(1)!=""):?>
+						<th class="no-sort no-printpdf">Action</th>
+					<?php endif;?>	
+				</tr>
+			</thead>
+			<tbody>
+			<?php $i=1+(($page-1)*20); foreach ($paginator as $row):
+				//echo '<pre>';print_r($paginator);exit;?>
+				<tr>
+					<td><?php  echo $i++; ?></td>								       
+					<td class="fw-bold"><?php echo $row['category']; ?></td>
+					
+					<?php if($this->button(1)!=""):?>
+						<td><?php echo $this->button(1, $row['id'].'_'.$page);?></td>
+					<?php endif;?>
+				</tr>
+				<?php endforeach; ?>
+			</tbody>
+		</table>
+	</div>
+	<div class="card-footer d-flex align-items-center">
+		<?php echo $this->paginationControl($this->paginator,'Sliding','adm_pagination.phtml', 
+			array('route' => 'masters/paginator','action'=>'vehicle','id'=>$this->company_id));?>
+	</div>
+</div>
+<div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-hidden="true">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<script>
+$('document').ready(function(){
+	$('#district').change(function(){
+		window.location.href="<?php echo $this->url('masters',array('action'=>'vehicle'));?>/"+$(this).val();
+	});
+	$('#dataTables').DataTable();
+});
+</script>

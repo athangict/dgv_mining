@@ -1,0 +1,92 @@
+
+<?php
+/**
+ * 
+ * View -- of Accounts/ChartaccountController/addclassAction
+ * 
+ */
+//$this->headTitle($this->title);
+?>
+<form id="form" method="post" action="<?php echo $this->url('q', array('action' => 'addassignvehicle')); ?>" enctype="multipart/form-data">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title"> <i class="fa fa-asterisk"></i> Assign Truck Details</h4>
+    </div>
+    <div class="modal-body">
+        <input type="hidden" name="application_id" id="application_id" value="<?php echo $application_id; ?>" />
+        
+        <div class="row">
+        <div class="form-group col-lg-4">
+    <label for="company" class="control-label">Company</label>
+    <select class="form-control" id="company" name="company" data-placeholder="Select" required>
+        <option value="" disabled selected>Select</option>
+        <?php foreach ($companys as $company): ?>
+            <?php //if ($company['status'] == 1):  ?>
+                <option value="<?php echo $company['id']; ?>">
+                    <?php echo $company['company']; ?>
+                </option>
+            <?php //endif; ?>
+        <?php endforeach; ?>
+    </select>
+</div>
+
+        
+            <div class="form-group col-lg-4">
+                <label for="vehicle" class="control-label">Truck_No</label>
+                <select class="form-control chosen-widget" id="vehicle" name="vehicle" data-placeholder="Select" required>
+                    <option value=""  disabled selected>Select</option>
+                    <!-- Vehicle options will be dynamically added here -->
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="submit" class="btn btn-success"><i class="fa fa-check"></i> Save </button>
+        <button type="button" class="btn btn-warning" data-dismiss="modal"><i class="fa fa-times"></i> Cancel </button>
+    </div>
+</form>
+
+<script>
+$(function(){
+    // When the company is selected, fetch and update vehicle options
+    $('select#company').on('change', function() {
+        $.post(
+            "<?php echo $this->url('q', array('action' => 'getvehicless')); ?>",
+            { vehicleId: $(this).val() },
+            function(data) {
+                // Populate vehicle dropdown with the vehicle name and id
+                $('select#vehicle').html(data.vehicle);
+                $('select#vehicle').trigger('chosen:updated');
+            },
+            'json'
+        );
+    });
+
+    // Initialize form validation
+    const fv = FormValidation.formValidation(document.getElementById('form'), {
+        fields: {
+            company: {
+                validators: {
+                    notEmpty: { message: 'Please select a company.' }
+                }
+            },
+            vehicle: {
+                validators: {
+                    notEmpty: { message: 'Please select a vehicle.' }
+                }
+            }
+        },
+        plugins: {
+            trigger: new FormValidation.plugins.Trigger(),
+            bootstrap3: new FormValidation.plugins.Bootstrap3(),
+            submitButton: new FormValidation.plugins.SubmitButton(),
+            defaultSubmit: new FormValidation.plugins.DefaultSubmit(),
+        },
+    });
+
+    // Revalidate fields when the selection changes
+    $('form select').chosen().change(function() {
+        fv.revalidateField($(this).attr('name'));
+    });
+});
+</script>

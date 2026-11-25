@@ -1,0 +1,174 @@
+<?php 
+/**
+ * View -- of Assessment/ProtectionController/step2Action
+ */
+$this->headTitle($this->title);
+?>
+<?php 
+// If $application is an array of rows and you only need the first row:
+$row = reset($application); // safer than "foreach ($application as $row);" which was incorrect
+?>
+
+<div class="page-body">
+	<div class="container-xl">
+		<div class="row row-cards">
+			<div class="col-12">
+				<div class="card">
+					<div id="wizard" class="swMain">
+						<?php echo $this->partial('assessment/assessment/stepper.phtml', array('active' => 'step3','id'=> $row['id'],'step' => '3','maxstep'=> $row['maxstep']));?>
+					</div>
+					<div class="card-body">
+					    <table class="table table-sm table-bordered card-table text-wrap fs-5" >
+							<tbody>
+								
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+
+        <!-- rest of top card... -->
+
+		<div class="row row-cards">
+			<div class="col-12">
+				<div class="card">
+				    <div class="card-header">
+						<div class="col-auto ms-auto d-print-none">
+							<div class="btn-list">
+								<?php //echo $this->button(6,$row['id'],'','3036');?>
+							</div>
+						</div>
+					</div>
+
+					<div class="table-responsive">
+                        <table class="table table-sm table-bordered card-table text-wrap fs-5" >
+                            <tbody>
+                                <tr>
+                                    <th class="table-secondary fw-bold text-end" style="width: 25%;">Application No:</th>
+                                    <td><strong><?php echo $row['application_no']; ?></strong></td>
+                                </tr>
+                                <tr>
+                                    <th class="table-secondary fw-bold text-end" style="width: 25%;">Work Category:</th>
+                                    <td><?php echo $this->category->getColumn($row['category'], 'category'); ?></td>
+                                </tr>
+                                <tr>
+                                    <th class="table-secondary fw-bold text-end" style="width: 25%;">Date:</th>
+                                    <td><?php echo (empty($row['date'])) ? "<i>-Not Available-</i>" : $row['date']; ?></td>
+                                </tr>
+                                <tr>
+                                    <th class="table-secondary fw-bold text-end" style="width: 25%;">status</th>
+                                    <td><?php echo $this->status($row['status']); ?></td>
+                                </tr>
+                            </tbody>
+                        </table>
+					</div>
+
+                    <div class="row row-cards">
+                        <div class="btn-list" style="padding-left:20px">
+                            <?php echo $this->button(6, $row['id'], '', '3042'); ?>
+                        </div>
+						<br>
+
+                        <?php
+                        // PRE-COMPUTE trip counts per vehicle BEFORE rendering rows
+                        $vehicleTripCount = [];
+                        if (!empty($extractiondetails) && is_array($extractiondetails)) {
+                            foreach ($extractiondetails as $r) {
+                                $vid = $r['vehicle'];
+                                if (!isset($vehicleTripCount[$vid])) {
+                                    $vehicleTripCount[$vid] = 0;
+                                }
+                                $vehicleTripCount[$vid]++;
+                            }
+                        }
+                        ?>
+
+                        <div class="table-responsive">
+                        <table class="table table-sm table-bordered card-table text-wrap fs-5"  id="dataTables">
+                            <thead>
+                                <tr>
+                                    <th>Type Of Dispatched</th>
+                                    <th>Company</th>
+                                    <th>Truck_no</th>
+									<th>Driver</th>
+                                    <th>Time</th>
+                                    <th>Permit No</th>
+									<th>Dispatched Location</th>
+                                    <th>Approximate weight(MT)</th>
+                                    <th>Weight(MT)</th>
+				                    <th>Comments</th>
+                                    <th>Trips Done</th> <!-- New column for trip count -->
+                                    <!-- <th class="no-sort">Action</th>
+                                    <th class="no-sort">Action</th> -->
+                                    <!-- <th class="no-sort">Action</th> -->
+                                    <!-- <th class="no-sort">Action</th> -->
+                                    <?php if ($this->button(1) != ""): ?>
+                                        <th class="no-sort">Action</th>
+                                        <th class="no-sort">Action</th>
+                                        <!-- <th class="no-sort">Action</th> -->
+                                    <?php endif; ?>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($extractiondetails as $rows): 
+                                    $vehicleId = $rows['vehicle'];
+                                    // Show the precomputed total trips for this vehicle (or 0 if not set)
+                                    $tripsForVehicle = isset($vehicleTripCount[$vehicleId]) ? $vehicleTripCount[$vehicleId] : 0;
+                                ?>
+                                    <tr>
+                                        <td><?php echo $this->dispatchtypeObj->getColumn($rows['type_ofdispatche'], 'name'); ?></td>
+                                        <td><?php echo $this->company->getColumn($rows['company'], 'company'); ?></td>
+                                        <td><?php echo $this->vechObj->getColumn($rows['vehicle'], 'vehicle'); ?></td>
+										<td><?php echo $rows['driver_name']; ?></td>
+                                        <td><?php echo date('h:i A', strtotime($rows['created'])); ?></td>
+                                        <td><?php echo $rows['permit_no']; ?></td>
+									    <td><?php echo $this->locationObj->getColumn($rows['location'], 'location'); ?></td>
+                                        <td><?php echo $rows['aprox_weight']; ?></td>
+                                        <td><?php echo !empty($rows['weight']) ? $rows['weight'] : '-Not Measure-'; ?></td>
+                                        <td><?php echo $rows['comments']; ?></td>
+                                        <td><?php echo $tripsForVehicle; ?></td> 
+                                        <?php if ($this->button(1) != ""): ?>
+                                             <td>
+                                                <?php echo $this->button(6, $row['id'], '', '3043'); ?>
+                                            </td>
+                                            <td>
+                                                <?php echo $this->button(6, $rows['id'], '', '3049'); ?>
+                                            </td>
+                                            <td>
+                                                <?php echo $this->button(6, $rows['id'], '', '4001'); ?>
+                                            </td>
+                                        <?php endif; ?>
+                                       
+                                    </tr>
+                                <?php endforeach;?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer d-flex">
+                    <div class="col-auto ms-auto d-print-none">
+                        <div class="btn-list">
+                            <a href="<?php echo $this->url('q',array('action' => 'step2','id'=>$row['id']));?>" class="btn  btn-white">
+                                Back
+                            </a>
+                            <a href="<?php echo $this->url('q',array('action' => 'step4','id'=>$row['id']));?>" class="btn btn-white">
+                                Next &nbsp;
+                            </a>
+                        </div>
+                    </div>
+                </div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- modal omitted for brevity -->
+
+<script>
+    $(document).ready(function(){
+        $('#dataTables').DataTable({
+            "paging":   true,
+        });
+    });
+</script>

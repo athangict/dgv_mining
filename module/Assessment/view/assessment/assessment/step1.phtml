@@ -1,0 +1,180 @@
+<?php 
+// Set the page title
+$this->headTitle($this->title);
+?>
+<?php foreach ($application as $row): ?>
+<div class="page-body">
+    <div class="container-xl">
+        <div class="row row-cards">
+            <div class="col-12">
+                <div class="card">
+                    <div id="wizard" class="swMain">
+                        <?php echo $this->partial('assessment/assessment/stepper.phtml', ['active' => 'step1', 'id' => $row['id'], 'step' => '1', 'maxstep' => $row['maxstep']]); ?>
+                    </div>
+                    <div class="card-header">
+                        <div class="col-auto ms-auto d-print-none">
+                            <div class="btn-list">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-sm table-bordered card-table text-wrap fs-5">
+                            <tbody>
+                                <tr>
+                                    <th class="table-secondary fw-bold text-end" style="width: 25%;">Application No:</th>
+                                    <td><strong><?php echo $row['application_no']; ?></strong></td>
+                                </tr>
+                                <tr>
+                                    <th class="table-secondary fw-bold text-end" style="width: 25%;">Work Category:</th>
+                                    <td><?php echo $this->category->getColumn($row['category'], 'category'); ?></td>
+                                </tr>
+                                <tr>
+                                    <th class="table-secondary fw-bold text-end" style="width: 25%;">Date:</th>
+                                    <td><?php echo (empty($row['date'])) ? "<i>-Not Available-</i>" : $row['date']; ?></td>
+                                </tr>
+                                <tr>
+                                    <th class="table-secondary fw-bold text-end" style="width: 25%;">status</th>
+                                    <td><?php echo $this->status($row['status']); ?></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div><?php echo $this->button(6, $row['id'], '', '3039'); ?></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row row-cards">
+            <div class="col-12">
+                <div class="card">
+                    <div class="table-responsive">
+                      <table class="table table-bordered table-striped table-hover table-vcenter text-nowrap" id="dataTables">
+    <div class="btn-list" style="display: flex; justify-content: flex-end; width: 100%; margin-bottom: 15px;">
+        <div style="text-align: right; margin-left: 10px;">
+            <?php echo $this->button(6, $row['id'], '', '3040'); ?>
+        </div>
+        <div style="text-align: right; margin-left: 10px;">
+            <?php echo $this->button(6, $row['id'], '', '3047'); ?>
+        </div>
+        <div style="text-align: right; margin-left: 10px;">
+            <?php echo $this->button(6, $row['id'], '', '3053'); ?>
+        </div>
+    </div>
+    <thead>
+        <tr>
+            <th>Excavator</th>
+            <th>Operator</th>
+            <th>Start Meter</th>
+			 <th>End Meter</th>
+            <th>HSD Issued</th>
+            <th class='no-sort'>Action</th>
+			 <th class='no-sort'>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php if (!empty($applications)): ?>
+            <?php foreach ($applications as $infrastructure): ?>
+                <tr>
+                    <td><?php echo $this->excabatorObj->getColumn($infrastructure['excavator'],'name'); ?></td>
+                    <td><?php echo $this->employeeObj->getColumn($infrastructure['driver_name'],'full_name'); ?></td>
+                    <td><?php echo $infrastructure['start_meter']; ?></td>
+					<td><?php echo $infrastructure['end_meter']; ?></td>
+                    <td><?php echo $infrastructure['hsd_issued']; ?></td>
+                    <td>
+                        <?php if ($this->button(1) != ""): ?>
+                            <?php echo $this->button(6, $infrastructure['id'], '', '3041'); ?>
+                        <?php endif; ?>
+                    </td>
+					  <td>
+						<?php echo $this->button(6, $infrastructure['id'], '', '3204'); ?>
+					</td>
+                </tr>
+            <?php endforeach; ?>
+        <?php else: ?>
+            <tr>
+                <td colspan="5" class="text-center">No infrastructure details available.</td>
+            </tr>
+        <?php endif; ?>
+    </tbody>
+</table>
+
+<table class="table table-bordered table-striped table-hover table-vcenter text-nowrap" id="explosiveTable">
+    <thead>
+        <tr>
+            <th>Explosive</th>
+            <th>No. Of Explosive</th>
+            <th>Blasters</th>
+            <th class='no-sort'>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php if (!empty($explosives)): ?>
+            <?php foreach ($explosives as $explosive): ?>
+                <tr>
+                    <td><?php echo $this->expObj->getColumn($explosive['explosive_name'],'explosive_type'); ?></td>
+                    <td><?php echo htmlspecialchars($explosive['no_ofexplosive']); ?></td>
+                    <td><?php echo $this->emp->getColumn($explosive['blasters'], 'full_name'); ?></td>
+                    <td>
+                        <?php if ($this->button(1) != ""): ?>
+                            <?php echo $this->button(6, $explosive['id'], '', '3048'); ?>
+                        <?php endif; ?>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
+        <?php else: ?>
+            <tr>
+                <td colspan="4" class="text-center">No explosive details available.</td>
+            </tr>
+        <?php endif; ?>
+    </tbody>
+</table>
+
+<table class="table table-bordered table-striped table-hover table-vcenter text-nowrap" id="vehicleTable">
+    <thead>
+        <tr>
+            <th>Company</th>
+            <th>Truck_No/Truck_ID</th>
+            <th class='no-sort'>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php if (!empty($vechileassign)): ?>
+            <?php foreach ($vechileassign as $vehicle): ?>
+                <tr>
+                    <td><?php echo $this->company->getColumn($vehicle['company'], 'company'); ?></td>
+                    <td><?php echo $this->vechObj->getColumn($vehicle['vehicle'], 'vehicle'); ?></td>
+                    <td>
+                        <?php if ($this->button(1) != ""): ?>
+                            <?php echo $this->button(6, $vehicle['id'], '', '3056'); ?>
+                        <?php endif; ?>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
+        <?php else: ?>
+            <tr>
+                <td colspan="3" class="text-center">No vehicle details available.</td>
+            </tr>
+        <?php endif; ?>
+    </tbody>
+</table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer d-flex">
+            <div class="col-auto ms-auto d-print-none">
+                <div class="btn-list">
+                    <a href="<?php echo $this->url('q', array('action' => 'step2', 'id' => $row['id'])); ?>" class="btn btn-white">
+                        Next &nbsp;
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<?php endforeach; ?>
+<div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+        </div>
+    </div>
+</div>

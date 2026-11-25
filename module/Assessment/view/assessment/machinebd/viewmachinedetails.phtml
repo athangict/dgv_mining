@@ -1,0 +1,85 @@
+<?php
+/**
+ * View -- of Administration/MasterController/block
+ * chophel@athang.com
+ */
+$this->headTitle($this->title);
+foreach($this->machineObj as $rows):
+//echo '<pre>'; print_r($row); exit;
+endforeach;
+?>
+
+
+<div class="card">
+    <div class="card-header">
+        <div class="row">
+            <div class="col-lg-3">
+                <div class="space"></div>
+                <div class="btn-group pull-right">
+                    <?php // Add your button rendering logic here, if any ?>
+                </div>
+           
+
+    <h5 class="widget-title" style="display: inline-block;">
+        # Machine Details:<strong>&nbsp;&nbsp;<?php // echo $plan_no; ?></strong>&nbsp;
+    </h5>
+    <div style="clear: both;"></div> <!-- Clear floating elements -->
+    <div style="font-size: 16px; margin-top: 10px;">
+        <strong>Machine No:</strong> <?php echo $rows['machine_no']; ?> &nbsp;|&nbsp;
+        <strong>Date:</strong> <?php echo date("F Y", strtotime($rows['created'])); ?> <!-- Full month name and year -->
+    </div>
+
+
+
+            </div>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table card-table text-nowrap" id="dataTables">
+            <thead>
+                <tr>
+                    <th>Machine Type</th> <!-- Removed Machine No -->
+                    <th>Time</th>
+                    <th>Cause of Breakdown</th>
+                    <th>Duration of Breakdown</th>
+                    <th>Person Involved</th>
+                    <th>Action Taken</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php 
+                    foreach($this->machinedtls as $row):
+                        if($row['machine_no'] == $rows['machine_no']): // Ensure you are comparing the correct machine_no
+                ?>
+                    <tr>
+                        <!-- Removed Machine No column -->
+                        <td class="fw-bold"><?php echo $row['machine_type']; ?></td>
+                      <td><?php echo date('g:i A', strtotime($row['created'])); ?></td>
+                        <td><?php echo $row['cause']; ?></td>
+                        
+                        <td><?php echo $row['duration_of_bd']; ?></td>
+                        <td><?php echo $row['person_involved']; ?></td>
+                        <td><?php echo $row['action_taken']; ?></td>
+                    </tr>
+                <?php 
+                        endif;
+                    endforeach;
+                ?>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal Structure (Empty for now, can be populated with dynamic content later) -->
+<div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <!-- Modal content will go here dynamically -->
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<script>
+// You can place your custom JS here if needed
+</script>

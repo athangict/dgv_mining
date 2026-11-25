@@ -1,0 +1,171 @@
+<?php
+/**
+ * View -- of Accounts/ChartaccountController/addclassAction
+ */
+?>
+<form id="form" method="post" action="<?php echo $this->url('target', array('action' => 'addtarget')); ?>" enctype="multipart/form-data">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title"><i class="fa fa-asterisk"></i> Quarry Target Setting</h4>
+    </div>
+
+    <input type="hidden" name="target_id" id="target_id">
+
+    <div class="modal-body">
+        <div class="row">
+           <div class="col-lg-12">
+            <div class="form-group">
+                <label for="year" class="control-label">Year</label>
+                    <select class="form-control" name="year" id="year" required>
+                        <?php
+                        $currentYear = date('Y');
+                        $nextYear = $currentYear + 1;
+                        $startYear = 2024;
+                        $selectedYear = $target['year'] ?? $currentYear;
+                        for ($y = $nextYear; $y >= $startYear; $y--) {
+                            $selected = ($y == $selectedYear) ? 'selected' : '';
+                            echo "<option value=\"$y\" $selected>$y</option>";
+                        }
+                        ?>
+                    </select>
+            </div>
+        </div>
+
+            <!-- Period -->
+            <div class="col-lg-12">
+        <div class="form-group">
+            <label for="period" class="control-label">Period</label>
+            <select class="form-control" id="period" name="period" required>
+                <option value="" disabled selected>Select</option>
+                <?php foreach ($periods as $period): ?>
+                    <?php if ($period['id'] != 1): ?>
+                        <option value="<?php echo $period['id']; ?>"><?php echo $period['period']; ?></option>
+                    <?php endif; ?>
+                <?php endforeach; ?>
+            </select>
+        </div>
+    </div>
+
+
+            <!-- Sub Period -->
+            <div class="col-lg-12" id="subp" style="display:none;">
+                <div class="form-group">
+                    <label for="subperiod" class="control-label">Sub Period</label>
+                    <select id="subperiod" name="subperiod" class="form-control">
+                        <option value="0">Select</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Target -->
+            <div class="col-lg-12">
+                <div class="form-group">
+                    <label for="target" class="control-label">Target</label>
+                    <input class="form-control" name="target" id="target" type="text" placeholder="Enter Target">
+                </div>
+            </div>
+        </div>
+    </div> <!-- /modal-body -->
+
+    <div class="modal-footer">
+        <button type="submit" class="btn btn-success"><i class="fa fa-check"></i> Save</button>
+        <button type="button" class="btn btn-warning" data-dismiss="modal"><i class="fa fa-times"></i> Cancel</button>
+    </div>
+</form>
+
+<script>
+$(function () {
+    // Initialize Chosen on all selects
+    $('form select').chosen();
+
+    // FormValidation initialization
+    const fv = FormValidation.formValidation(document.getElementById('form'), {
+        fields: {
+            year: {
+                validators: {
+                    notEmpty: {
+                        message: 'Please select a Year.'
+                    }
+                }
+            },
+            period: {
+                validators: {
+                    notEmpty: {
+                        message: 'Please select a Period.'
+                    }
+                }
+            },
+            target: {
+                validators: {
+                    notEmpty: {
+                        message: 'Please enter a Target.'
+                    },
+                    numeric: {
+                        message: 'Target must be a number.'
+                    }
+                }
+            },
+            subperiod: {
+                validators: {
+                    callback: {
+                        message: 'Please select a Sub Period.',
+                        callback: function(input) {
+                            // Validate only if subperiod is visible
+                            const isVisible = $('#subp').is(':visible');
+                            const value = input.value;
+                            return !isVisible || (value !== '' && value !== '0');
+                        }
+                    }
+                }
+            }
+        },
+        plugins: {
+            trigger: new FormValidation.plugins.Trigger(),
+            bootstrap3: new FormValidation.plugins.Bootstrap3(),
+            submitButton: new FormValidation.plugins.SubmitButton(),
+            defaultSubmit: new FormValidation.plugins.DefaultSubmit()
+        }
+    }).on('core.element.validated', function (e) {
+        const fieldName = e.field.replace('[]', '');
+        const container = $('div#' + fieldName + '_chosen');
+
+        if (e.valid) {
+            container.removeClass('is-invalid').addClass('is-valid');
+        } else {
+            container.removeClass('is-valid').addClass('is-invalid');
+        }
+    });
+
+    // Revalidate on Chosen change
+    $('form select').change(function () {
+        fv.revalidateField($(this).attr('name'));
+    });
+
+    // Handle Sub Period based on selected Period
+    $('#period').on('change', function () {
+        const periodId = $(this).val();
+        if (periodId == 1 || periodId == 2) {
+            $('#subp').show();
+            $.post(
+                "<?php echo $this->url('target', array('action' => 'getsubperiod')); ?>",
+                { id: periodId },
+                function (data) {
+                    if (data && data.subperiod) {
+                        $("#subperiod").html(data.subperiod);
+                    } else {
+                        $("#subperiod").html('<option value="0">None</option>');
+                    }
+                    $("#subperiod").trigger('chosen:updated');
+                },
+                'json'
+            );
+        } else {
+            $('#subp').hide();
+            $('#subperiod').val('0').trigger('chosen:updated');
+        }
+    });
+
+    // Initialize chosen for subperiod on load
+    $('#subperiod').chosen();
+});
+</script>

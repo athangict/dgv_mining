@@ -1,0 +1,25 @@
+<?php 
+/**
+ * View -- of Heritage/HeritageController/uploadprofileAction
+ */
+$this->headTitle($this->title);
+?>
+<?php  foreach ($heritage as $row):
+ endforeach;?>
+<form id="#form" method="post" action="<?php echo $this->url('assessment', array('action' => 'uploadprofile','id' => $row['id'])); ?>" enctype="multipart/form-data">                  
+    <div class="modal-header">
+        <h4 class="modal-title"> <i class="icon ti ti-edit"></i><?php echo $this->title; ?></h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>  <!-- /modal-header -->
+	<input type="hidden" name="heritage_id" id="heritage_id" value="<?php echo $row['id'];?>">
+    <div class="modal-body">   
+        <div class="form-group col-lg-6">
+            <label for="recipient-name" class="control-label"> Select Profile Photo:</label>
+            <input type="file" name="image-file" id="uploadfile" >
+        </div>
+	</div> <!-- /modal-body -->    
+    <div class="modal-footer">
+        <button type="submit" class="btn btn-success"><i class="icon ti ti-check"></i>Save</button>
+        <button type="button" class="btn btn-warning" data-bs-dismiss="modal"><i class="icon ti ti-x"></i>Cancel</button> 
+    </div>
+</form>

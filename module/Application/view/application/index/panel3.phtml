@@ -1,0 +1,330 @@
+<?php
+/**
+ * View -- of Application/IndexController/panel2Action
+ */
+$this->headTitle($title);
+?>
+<?php echo $this->tabs_helper(array(5,6,7)); ?>
+
+<div class="page-header">
+    <div class="row">
+        <div class="col-lg-6">
+            <h1>Dashboard</h1>
+        </div>
+    </div>
+</div>
+
+<br>
+
+<div class="page-body">
+    <div class="container-xl">
+        <div class="row row-deck row-cards">
+            <div class="col-lg-8"></div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-body">
+                <h3 class="card-title text-center">Target vs Actual</h3>
+                <div id="chart1" class="canvas-chart" style="height: 400px;"></div>
+
+                <?php
+                    $Total_target_1 = array();
+                    $Total_actual_1 = array();
+                    $year = date('Y');
+
+                    foreach ($month as $m) {
+                        $monthly_target = $this->targetObj->getColumn(array('period'=>1,'year'=>date('Y'),'period'=>$m, 'status'=>4, 'item'=>1), 'target');
+
+                        if (isset($m['period'], $m['id'])) {
+                            array_push($Total_target_1, array("label"=>$m['period'], "y"=>$monthly_target));
+                            $actual = $this->crusherpObj->getActualTotalByMonth($year, $m['id'], 1, 'product_qty');
+                            array_push($Total_actual_1, array("label"=>$m['period'], "y"=>$actual));
+                        }
+                    }
+                ?>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-body">
+                <h3 class="card-title text-center">Target vs Actual</h3>
+                <div id="chart2" class="canvas-chart" style="height: 400px;"></div>
+
+                <?php
+                    $Total_target_2 = array();
+                    $Total_actual_2 = array();
+
+                    foreach ($month as $m) {
+                        $monthly_target = $this->targetObj->getColumn(array('period'=>2,'year'=>date('Y'),'period'=>$m, 'status'=>4,  'item'=>2), 'target');
+
+                        if (isset($m['period'], $m['id'])) {
+                            array_push($Total_target_2, array("label"=>$m['period'], "y"=>$monthly_target));
+                            $actual = $this->crusherpObj->getActualTotalByMonth($year, $m['id'], 2, 'product_qty');
+                            array_push($Total_actual_2, array("label"=>$m['period'], "y"=>$actual));
+                        }
+                    }
+                ?>
+            </div>
+        </div>
+    </div>
+
+
+        <div class="col-lg-6">
+        <div class="card">
+            <div class="card-body">
+                <h3 class="card-title text-center">Target vs Actual</h3>
+                <div id="chart3" class="canvas-chart" style="height: 400px;"></div>
+
+                <?php
+                    $Total_target_3 = array();
+                    $Total_actual_3 = array();
+
+                    foreach ($month as $m) {
+                        $monthly_target = $this->targetObj->getColumn(array('year'=>date('Y'),'period'=>$m, 'status'=>4,  'item'=>4), 'target');
+
+                        if (isset($m['id'])) {
+                            array_push($Total_target_3, array("label"=>$m['period'], "y"=>$monthly_target));
+                            $actual = $this->crusherpObj->getActualTotalByMonth($year, $m['id'], 4, 'product_qty');
+                            array_push($Total_actual_3, array("label"=>$m['period'], "y"=>$actual));
+                        }
+                    }
+                ?>
+            </div>
+        </div>
+    </div>
+
+
+     <div class="col-lg-6">
+        <div class="card">
+            <div class="card-body">
+                <h3 class="card-title text-center">Target vs Actual</h3>
+                <div id="chart4" class="canvas-chart" style="height: 400px;"></div>
+
+                <?php
+                    $Total_target_4 = array();
+                    $Total_actual_4 = array();
+
+                    foreach ($month as $m) {
+                        $monthly_target = $this->targetObj->getColumn(array('period'=>4,'year'=>date('Y'),'period'=>$m, 'status'=>4,  'item'=>5), 'target');
+
+                        if (isset($m['period'], $m['id'])) {
+                            array_push($Total_target_4, array("label"=>$m['period'], "y"=>$monthly_target));
+                            $actual = $this->crusherpObj->getActualTotalByMonth($year, $m['id'], 5, 'product_qty');
+                            array_push($Total_actual_4, array("label"=>$m['period'], "y"=>$actual));
+                        }
+                    }
+                ?>
+            </div>
+        </div>
+    </div>
+
+        <div class="col-lg-6">
+        <div class="card">
+            <div class="card-body">
+                <h3 class="card-title text-center">Target vs Actual</h3>
+                <div id="chart5" class="canvas-chart" style="height: 400px;"></div>
+
+                <?php
+                    $Total_target_5 = array();
+                    $Total_actual_5 = array();
+
+                    foreach ($month as $m) {
+                        $monthly_target = $this->targetObj->getColumn(array('period'=>5,'year'=>date('Y'),'period'=>$m, 'status'=>4, 'item'=>9), 'target');
+
+                        if (isset($m['period'], $m['id'])) {
+                            array_push($Total_target_5, array("label"=>$m['period'], "y"=>$monthly_target));
+                            $actual = $this->crusherpObj->getActualTotalByMonth($year, $m['id'], 9, 'product_qty');
+                            array_push($Total_actual_5, array("label"=>$m['period'], "y"=>$actual)); 
+                        }
+                    }
+                ?>
+            </div>
+        </div>
+    </div>
+
+ <div class="col-lg-6">
+        <div class="card">
+            <div class="card-body">
+                <h3 class="card-title text-center">Target vs Actual</h3>
+                <div id="chart6" class="canvas-chart" style="height: 400px;"></div>
+
+                <?php
+                    $Total_target_6 = array();
+                    $Total_actual_6 = array();
+
+                    foreach ($month as $m) {
+                        $monthly_target = $this->targetObj->getColumn(array('period'=>6,'year'=>date('Y'),'period'=>$m, 'status'=>4, 'item'=>3), 'target');
+
+                        if (isset($m['period'], $m['id'])) {
+                            array_push($Total_target_6, array("label"=>$m['period'], "y"=>$monthly_target));
+                            $actual = $this->crusherpObj->getActualTotalByMonth($year, $m['id'], 3, 'product_qty');
+                            array_push($Total_actual_6, array("label"=>$m['period'], "y"=>$actual));
+                        }
+                    }
+                ?>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+
+<script>
+$(function () {
+    var chart1 = new CanvasJS.Chart("chart1", {
+        animationEnabled: true,
+        exportEnabled: true,
+        title: { text: "10  MM" },
+        theme: "light",
+        axisX: { title: "Month", interval: 1 },
+        axisY: { title: "No. of MT" },
+        data: [
+            {
+                type: "column",
+                legendText: "Target MT",
+                showInLegend: true,
+                dataPoints: <?php echo json_encode($Total_target_1, JSON_NUMERIC_CHECK); ?>
+            },
+            {
+                type: "column",
+                legendText: "Actual MT",
+                showInLegend: true,
+                dataPoints: <?php echo json_encode($Total_actual_1, JSON_NUMERIC_CHECK); ?>
+            }
+        ]
+    });
+    chart1.render();
+
+    var chart2 = new CanvasJS.Chart("chart2", {
+        animationEnabled: true,
+        exportEnabled: true,
+        title: { text: "20 MM" },
+        theme: "light",
+        axisX: { title: "Month", interval: 1 },
+        axisY: { title: "No. of MT" },
+        data: [
+            {
+                type: "column",
+                legendText: "Target MT",
+                showInLegend: true,
+                dataPoints: <?php echo json_encode($Total_target_2, JSON_NUMERIC_CHECK); ?>
+            },
+            {
+                type: "column",
+                legendText: "Actual MT",
+                showInLegend: true,
+                dataPoints: <?php echo json_encode($Total_actual_2, JSON_NUMERIC_CHECK); ?>
+            }
+        ]
+    });
+    chart2.render();
+
+
+     var chart3 = new CanvasJS.Chart("chart3", {
+        animationEnabled: true,
+        exportEnabled: true,
+        title: { text: "30 MM" },
+        theme: "light",
+        axisX: { title: "Month", interval: 1 },
+        axisY: { title: "No. of MT" },
+        data: [
+            {
+                type: "column",
+                legendText: "Target MT",
+                showInLegend: true,
+                dataPoints: <?php echo json_encode($Total_target_3, JSON_NUMERIC_CHECK); ?>
+            },
+            {
+                type: "column",
+                legendText: "Actual MT",
+                showInLegend: true,
+                dataPoints: <?php echo json_encode($Total_actual_3, JSON_NUMERIC_CHECK); ?>
+            }
+        ]
+    });
+    chart3.render();
+
+    
+
+     var chart4 = new CanvasJS.Chart("chart4", {
+        animationEnabled: true,
+        exportEnabled: true,
+        title: { text: "Sand Dust" },
+        theme: "light",
+        axisX: { title: "Month", interval: 1 },
+        axisY: { title: "No. of MT" },
+        data: [
+            {
+                type: "column",
+                legendText: "Target MT",
+                showInLegend: true,
+                dataPoints: <?php echo json_encode($Total_target_4, JSON_NUMERIC_CHECK); ?>
+            },
+            {
+                type: "column",
+                legendText: "Actual MT",
+                showInLegend: true,
+                dataPoints: <?php echo json_encode($Total_actual_4, JSON_NUMERIC_CHECK); ?>
+            }
+        ]
+    });
+    chart4.render();
+
+
+       var chart5 = new CanvasJS.Chart("chart5", {
+        animationEnabled: true,
+        exportEnabled: true,
+        title: { text: "GSB" },
+        theme: "light",
+        axisX: { title: "Month", interval: 1 },
+        axisY: { title: "No. of MT" },
+        data: [
+            {
+                type: "column",
+                legendText: "Target MT",
+                showInLegend: true,
+                dataPoints: <?php echo json_encode($Total_target_5, JSON_NUMERIC_CHECK); ?>
+            },
+            {
+                type: "column",
+                legendText: "Actual MT",
+                showInLegend: true,
+                dataPoints: <?php echo json_encode($Total_actual_5, JSON_NUMERIC_CHECK); ?>
+            }
+        ]
+    });
+    chart5.render();
+
+
+         var chart6 = new CanvasJS.Chart("chart6", {
+        animationEnabled: true,
+        exportEnabled: true,
+        title: { text: "4OMM" },
+        theme: "light",
+        axisX: { title: "Month", interval: 1 },
+        axisY: { title: "No. of MT" },
+        data: [
+            {
+                type: "column",
+                legendText: "Target MT",
+                showInLegend: true,
+                dataPoints: <?php echo json_encode($Total_target_6, JSON_NUMERIC_CHECK); ?>
+            },
+            {
+                type: "column",
+                legendText: "Actual MT",
+                showInLegend: true,
+                dataPoints: <?php echo json_encode($Total_actual_6, JSON_NUMERIC_CHECK); ?>
+            }
+        ]
+    });
+    chart6.render();
+});
+</script>
