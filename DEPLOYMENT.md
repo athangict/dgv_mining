@@ -20,6 +20,20 @@ git push main ──► Dokploy (Auto Deploy) ──► docker compose build + u
 | `docker/config/zz-docker.local.php` | Deployment config overrides, copied into the image (see below) |
 | `docker/db-init.sh` | Local only: loads the dump into the local MariaDB |
 
+### Running locally
+
+The database dump is **not in git** because it contains client data. Get it from
+the team (securely, not by email or chat), save it as `data/dgv_mining.sql`, then:
+
+```bash
+docker compose up -d --build
+```
+
+The first start imports the dump into the local MariaDB. To re-import after
+replacing the file: `docker compose down -v && docker compose up -d`
+(`-v` also clears the local upload volumes).
+App: `http://localhost:8080/` or `http://localhost/dgv.mining.com/public/`.
+
 ### Application code is not modified
 
 All production fixes live in deployment files. No file under `module/`,
