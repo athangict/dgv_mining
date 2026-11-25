@@ -49,7 +49,9 @@ RUN { \
     } > /etc/apache2/conf-available/php-errors.conf \
  && a2enconf php-errors
 
-# PHP settings
+# PHP settings. short_open_tag=Off matches php.ini-production/XAMPP: views
+# contain "<?php//" (no space), which with short tags On is parsed as
+# "<?" + constant php and is a fatal error on PHP 8.
 RUN { \
       echo 'upload_max_filesize=64M'; \
       echo 'post_max_size=64M'; \
@@ -58,6 +60,7 @@ RUN { \
       echo 'date.timezone=Asia/Thimphu'; \
       echo 'output_buffering=4096'; \
       echo 'expose_php=Off'; \
+      echo 'short_open_tag=Off'; \
       echo 'opcache.enable=1'; \
       echo 'opcache.memory_consumption=128'; \
       echo 'opcache.max_accelerated_files=20000'; \
