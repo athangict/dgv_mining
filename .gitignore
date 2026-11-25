@@ -1,0 +1,71 @@
+# ---------------------------------------------------------------------------
+# Note: rules here only affect UNTRACKED files. Files already committed
+# (e.g. .env, vendor/, data/dgv_mining.sql) stay tracked until removed with
+# `git rm --cached <path>`.
+# ---------------------------------------------------------------------------
+
+# --- Environment / secrets --------------------------------------------------
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# --- Composer ---------------------------------------------------------------
+# Dependencies are installed by `composer install` (the Docker image does this).
+/vendor/
+composer.phar
+
+# --- Application runtime data -----------------------------------------------
+# Module/config cache (regenerated automatically)
+/data/cache/*
+!/data/cache/.gitkeep
+# User uploads - live in Docker volumes and backups, never in git
+/data/uploads/
+/public/upload/
+/public/uploads/
+# Logs
+/data/logs/
+*.log
+
+# --- Database dumps ---------------------------------------------------------
+# Dumps contain client data. Never commit them (the existing
+# data/dgv_mining.sql is already tracked; new dumps are ignored).
+/data/*.sql
+*.sql.gz
+*.sql.zip
+*.dump
+
+# --- Docker (local overrides) -----------------------------------------------
+docker-compose.override.yml
+
+# --- Testing / tooling ------------------------------------------------------
+/phpunit.xml
+.phpunit.result.cache
+.phpunit.cache/
+/coverage/
+.php-cs-fixer.cache
+.phpcs-cache
+
+# --- Vagrant ----------------------------------------------------------------
+/.vagrant/
+
+# --- IDEs / editors ---------------------------------------------------------
+.idea/
+.vscode/
+*.code-workspace
+nbproject/
+*.sublime-project
+*.sublime-workspace
+*.swp
+*.swo
+*~
+
+# --- OS files ---------------------------------------------------------------
+.DS_Store
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+ehthumbs.db
+Desktop.ini
