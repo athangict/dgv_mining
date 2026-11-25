@@ -1,3 +1,8 @@
+# Fixed project name: container/volume names are the same on every machine,
+# whatever the checkout folder is called. Local stack only - do NOT add a
+# name to docker-compose.prod.yml (Dokploy sets it per environment).
+name: dgv-mining
+
 services:
   app:
     build: .
